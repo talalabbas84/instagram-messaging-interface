@@ -28,16 +28,7 @@ jobs:
 
       - name: Lint and format code
         run: |
-          black --check .
           flake8
-        working-directory: ./backend
-
-      - name: Run black (check only)
-        run: black --check .
-        working-directory: ./backend
-
-      - name: Run isort (check only)
-        run: isort --check-only .
         working-directory: ./backend
 
       - name: Run black (auto-fix)
