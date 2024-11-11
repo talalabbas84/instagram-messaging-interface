@@ -3,18 +3,26 @@
 This project is an Instagram Messaging Interface that allows users to securely log in, send messages via Instagram, and handle both manual and JSON-based API inputs. The backend is built with FastAPI, using Redis for session management, while the frontend leverages React with Vite, TailwindCSS, and ShadCN UI.
 
 ## Table of Contents
-1. [Quick Setup](#quick-setup)
-2. [Manual Setup](#manual-setup)
+1. [Prerequisites](#prerequisites)
+2. [Quick Setup](#quick-setup)
+3. [Manual Setup](#manual-setup)
     - [Frontend Setup](#frontend-setup)
     - [Backend Setup](#backend-setup)
-3. [Project Structure](#project-structure)
-4. [Features](#features)
-5. [Tech Stack](#tech-stack)
-6. [Prerequisites](#prerequisites)
+4. [Project Structure](#project-structure)
+5. [Features](#features)
+6. [Tech Stack](#tech-stack)
 7. [Environment Variables](#environment-variables)
 8. [Usage](#usage)
 9. [Future Improvements](#future-improvements)
 10. [License](#license)
+
+## Prerequisites
+
+- **Redis**: Ensure Redis is installed and running, as it is required for session management.
+- **Python 3.8+** and **Node.js**: Required for backend and frontend setup, respectively.
+- **Docker (optional)**: If Redis is not installed natively, Docker can be used to run a Redis container.
+
+---
 
 ## Quick Setup
 
@@ -163,11 +171,6 @@ instagram-messaging-interface/
 - **AgentQL** for backend interaction with Instagram
 - **Redis** for session management
 - **Black** and **Flake8** for code formatting and linting
-
-## Prerequisites
-
-- **Redis**: Ensure Redis is installed and running, as it is required for session management.
-- **Python 3.8+** and **Node.js** (for backend and frontend respectively)
 
 ## Environment Variables
 
