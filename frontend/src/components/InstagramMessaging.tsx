@@ -37,10 +37,13 @@ export default function InstagramMessaging() {
   const [activeTab, setActiveTab] = useState<'manual' | 'json'>('manual')
 
   // Login Handler
-  const handleLogin = async () => {
+  const handleLogin = async (isMessage=false) => {
     setIsLoading(true)
     setError(null)
     await login(user)
+    if (isMessage) {
+      handleSendMessage()
+    }
     setIsLoading(false)
 
   }
@@ -110,6 +113,21 @@ export default function InstagramMessaging() {
     }
   }
 
+  const handleSubmit = () => {
+    if (!user.username || !user.password || !message.recipient || !message.message) {
+      setError('Please fill in all fields')
+      return
+    }
+    console.log('User:', user, 'Message:', message)
+  
+    // handleSendMessage()
+    // login and send message
+    handleLogin(true)
+    // handleSendMessage()
+    
+  }
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-xl">
@@ -156,6 +174,7 @@ export default function InstagramMessaging() {
                 jsonInput={jsonInput}
                 setJsonInput={handleJsonChange}
                 error={error}
+                handleSubmit={handleSubmit}
               />
             </TabsContent>
           </Tabs>
