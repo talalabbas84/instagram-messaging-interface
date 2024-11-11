@@ -1,19 +1,40 @@
 // services/sessionService.ts
-import { User } from '../types/types'
-import StorageService from './storageService'
-
 class SessionService {
-  static getStoredUser(): User | null {
-    const user = StorageService.getItem('instagramUser')
-    return user ? JSON.parse(user) : null
+  static getStoredUser() {
+    const storedUser = localStorage.getItem('instagramUser')
+    return storedUser ? JSON.parse(storedUser) : null
   }
 
-  static saveUser(user: User): void {
-    StorageService.setItem('instagramUser', JSON.stringify(user))
+  static saveUser(user: { username: string; password: string }) {
+    localStorage.setItem('instagramUser', JSON.stringify(user))
   }
 
-  static clearUser(): void {
-    StorageService.removeItem('instagramUser')
+  static clearUser() {
+    localStorage.removeItem('instagramUser')
+  }
+
+  static getToken() {
+    return localStorage.getItem('token')
+  }
+
+  static setToken(token: string) {
+    localStorage.setItem('token', token)
+  }
+
+  static clearToken() {
+    localStorage.removeItem('token')
+  }
+
+  static getRefreshToken() {
+    return localStorage.getItem('refresh_token')
+  }
+
+  static setRefreshToken(token: string) {
+    localStorage.setItem('refresh_token', token)
+  }
+
+  static clearRefreshToken() {
+    localStorage.removeItem('refresh_token')
   }
 }
 

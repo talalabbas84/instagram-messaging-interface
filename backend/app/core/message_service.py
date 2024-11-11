@@ -54,6 +54,13 @@ class MessageService:
     }
     """
 
+
+    NO_ACCOUNT_FOUND_QUERY = """
+    {
+        no_account_message (text='No account found.')
+    }
+    """
+
     async def send_message(self, recipient: str, message: str, username: str):
         logger.info(f"Starting message send to {recipient} from {username}")
 
@@ -68,7 +75,7 @@ class MessageService:
             await self._dismiss_notification_popup(wrapped_page)
 
             if not await self._send_message(wrapped_page, recipient, message):
-                raise HTTPException(status_code=500, detail="Message sending failed at unknown point.")
+                raise HTTPException(status_code=500, detail="Message sending failed. Try again later.")
             
             return "success"
 
@@ -77,7 +84,7 @@ class MessageService:
             raise session_exc
         except Exception as e:
             logger.exception(f"Error during message sending for {username} to {recipient}: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Message sending failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error sending message to {recipient}: {str(e)}")
         finally:
             await context.close()
             logger.info(f"Context for {username} closed after message attempt")
@@ -127,6 +134,14 @@ class MessageService:
         await BrowserHelper.human_type(recipient_input_response.recipient_input, recipient)
         logger.info(f"Typed recipient username: {recipient}")
         await BrowserHelper.random_delay(1000, 1500)
+
+         # Check for "No account found" message
+        no_account_found_response = await wrapped_page.query_elements(self.NO_ACCOUNT_FOUND_QUERY)
+        print(no_account_found_response)
+        if no_account_found_response.no_account_message:
+            logger.error(f"No account found for {recipient}")
+            raise HTTPException(status_code=404, detail="Recipient account not found.")
+            return False
 
         # Select the recipient from suggestions
         chat_suggestion_response = await wrapped_page.query_elements("""

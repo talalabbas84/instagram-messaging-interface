@@ -1,16 +1,18 @@
-// services/api.ts
 import axios from 'axios'
+import SessionService from './sessionService'
 
-// Create an Axios instance with base URL and headers
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'http://0.0.0.0:8000', // Replace with your backend API URL
+  headers: {
+    'Content-Type': 'application/json',
+  },
 })
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = SessionService.getToken()
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config
   },
@@ -19,27 +21,21 @@ api.interceptors.request.use(
   },
 )
 
-// Add response interceptor to handle token refresh
+// Token refresh interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response.status === 401) {
-      // Unauthorized
-      try {
-        const refreshToken = localStorage.getItem('refresh_token')
-        if (refreshToken) {
-          const response = await api.post('/refresh-token', {
-            refresh_token: refreshToken,
-          })
-          localStorage.setItem('token', response.data.access_token)
-          // Retry the failed request with the new token
-          error.config.headers['Authorization'] =
-            `Bearer ${response.data.access_token}`
-          return axios(error.config)
-        }
-      } catch (err) {
-        console.error('Token refresh failed', err)
-      }
+    if (error.response && error.response.status === 401) {
+      // Refresh token if expired
+      const refreshToken = SessionService.getRefreshToken()
+      const response = await axios.post('http://localhost:8000/refresh-token', {
+        refresh_token: refreshToken,
+      })
+      const { access_token, refresh_token } = response.data.data
+      SessionService.setToken(access_token) // Save new tokens
+      SessionService.setRefreshToken(refresh_token)
+      error.config.headers['Authorization'] = `Bearer ${access_token}`
+      return axios(error.config)
     }
     return Promise.reject(error)
   },

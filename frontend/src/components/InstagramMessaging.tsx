@@ -1,4 +1,3 @@
-// components/InstagramMessaging.tsx
 'use client'
 
 import { Button } from '@/components/ui/button'
@@ -10,16 +9,23 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSession } from '../hooks/useSession'
+import api from '../services/api'; // API helper for making requests
 import { Message, User } from '../types/types'
 import { JsonInputForm } from './JsonInputForm'
 import { LoginForm } from './LoginForm'
 import { MessageForm } from './MessageForm'
-import api from '../services/api' // API helper for making requests
 
 export default function InstagramMessaging() {
-  const { user, isLoggedIn, login, logout, setUser } = useSession()
+  const {  isLoggedIn, login, logout, refreshToken } =
+    useSession()
+
+  const [user, setUser] = useState<User>({
+    username: '',
+    password: '',
+  })
+
   const [message, setMessage] = useState<Message>({
     recipient: '',
     message: '',
@@ -34,7 +40,7 @@ export default function InstagramMessaging() {
   const handleLogin = async () => {
     setIsLoading(true)
     setError(null)
-    if (!user.username || !user.password) {
+    if (!user?.username || !user.password) {
       setError('Please fill in all fields')
       setIsLoading(false)
       return
@@ -45,7 +51,9 @@ export default function InstagramMessaging() {
         username: user.username,
         password: user.password,
       })
-      localStorage.setItem('token', response.data.access_token) // Store JWT token in localStorage
+      const { access_token, refresh_token } = response.data.data
+      localStorage.setItem('access_token', access_token) // Store access_token in localStorage
+      localStorage.setItem('refresh_token', refresh_token) // Store refresh_token in localStorage
       setSuccess('Logged in successfully!')
       login(user)
     } catch (err) {
@@ -66,14 +74,36 @@ export default function InstagramMessaging() {
     }
 
     try {
-      const response = await api.post('/send-message', {
-        recipient: message.recipient,
-        message: message.message,
-      })
+      const accessToken = localStorage.getItem('access_token')
+      const response = await api.post(
+        '/send-message',
+        {
+          recipient: message.recipient,
+          message: message.message,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      )
       setSuccess(`Message sent to ${message.recipient}!`)
       setMessage({ recipient: '', message: '' })
     } catch (err) {
-      setError('Failed to send message')
+      console.error(err)
+      if(err.response && err.response.data && err.response.data.detail) {
+        
+        setError(err.response.data.detail)
+      } else
+      {
+      if (err.response && err.response.status === 401) {
+        // If 401 error occurs, try refreshing the token
+        await refreshToken()
+        handleSendMessage() // Retry sending message after token refresh
+      } else {
+        setError('Failed to send message')
+      }
+    }
     } finally {
       setIsLoading(false)
     }
@@ -145,6 +175,11 @@ export default function InstagramMessaging() {
             </TabsContent>
           </Tabs>
         </CardContent>
+        {isLoggedIn && (
+          <Button variant="outline" onClick={logout} className="w-full">
+            Logout
+          </Button>
+        )}
       </Card>
     </div>
   )

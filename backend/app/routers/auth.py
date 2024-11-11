@@ -59,22 +59,21 @@ async def logout(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
-@router.post("/authorized-token")
+@router.get("/authorized-token")
 async def authorized_token(
-    token_request: TokenRequest,  # Request body with access and refresh tokens
     authorization: str = Header(...),  # Authorization header with the Bearer token
     jwt_service: JWTService = Depends(get_jwt_service),  # Inject JWTService for token validation
 ):
     try:
-        # Access and refresh tokens from request body
-        access_token = token_request.access_token
-        refresh_token = token_request.refresh_token
+        # Extract the token from the authorization header
+        access_token = authorization.split(" ")[1]
+
         
         # Try to validate the access token
         try:
             new_access_token, username = await jwt_service.validae_access_token_and_generate_new_access_token(access_token)
             message = "Token is valid and not expired"
-            data = {"access_token": new_access_token, "username": username, "refresh_token": refresh_token}
+            data = {"access_token": new_access_token, "username": username}
             return {"status": "success", "message": message, "data": data}
         
         except InvalidTokenError:
@@ -83,13 +82,8 @@ async def authorized_token(
         
         except jwt.ExpiredSignatureError:
            
-            tokens = await jwt_service.refresh_access_token(refresh_token)
-
-            # Return new access token, no refresh of refresh token
-            data = {"access_token": tokens["access_token"], "username": username, "refresh_token": tokens["refresh_token"]}
-            message = "Access token refreshed successfully."
-
-            return {"status": "success", "message": message, "data": data}
+            # Handle expired token
+            raise HTTPException(status_code=401, detail="Token has expired")
         
     except HTTPException as e:
         raise e  # Reraise the HTTPException if it occurs during validation

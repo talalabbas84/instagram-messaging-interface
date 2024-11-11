@@ -36,7 +36,7 @@ export function LoginForm({
         <Input
           id='username'
           placeholder='Your Instagram username'
-          value={user.username}
+          value={user.username || ''}
           onChange={e => setUser({ ...user, username: e.target.value })}
           className='w-full'
         />
@@ -49,7 +49,7 @@ export function LoginForm({
           id='password'
           type='password'
           placeholder='Your password'
-          value={user.password}
+          value={user.password || ''}
           onChange={e => setUser({ ...user, password: e.target.value })}
           className='w-full'
         />
