@@ -11,7 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useState } from 'react'
 import { useSession } from '../hooks/useSession'
-import api from '../services/api'; // API helper for making requests
+import api from '../services/api' // API helper for making requests
 import { Message, User } from '../types/types'
 import { JsonInputForm } from './JsonInputForm'
 import { LoginForm } from './LoginForm'
