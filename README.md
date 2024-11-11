@@ -1,5 +1,3 @@
-Here’s the updated README with both Quick Setup and Manual Setup sections, with Quick Setup at the top for ease of access.
-
 ```markdown
 # Instagram Messaging Interface
 
