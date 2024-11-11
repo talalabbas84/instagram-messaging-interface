@@ -1,10 +1,11 @@
 # app/dependencies.py
 
+from fastapi import Depends
+
 from app.core.login_service import LoginService
 from app.core.redis_helper import RedisHelper
 from app.core.session_service import SessionService
 from app.core.token_service import TokenService
-from fastapi import Depends
 
 
 # Dependency functions

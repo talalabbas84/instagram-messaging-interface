@@ -1,7 +1,9 @@
-from app.core.login_service import LoginService  # Updated import
-from app.dependencies import get_login_service  # Updated import from dependencies
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+
+from app.core.login_service import LoginService  # Updated import
+from app.dependencies import \
+    get_login_service  # Updated import from dependencies
 
 
 # Placeholder for LoginRequest model
