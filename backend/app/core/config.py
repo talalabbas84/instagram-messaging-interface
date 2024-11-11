@@ -1,5 +1,4 @@
 # app/utils/config.py
-from playwright.async_api import Geolocation, ProxySettings
 import os
 from dotenv import load_dotenv
 
@@ -26,8 +25,10 @@ class Config:
 
     # Browser and Playwright Configuration
     USER_AGENTS = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/74.0.3729.169 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) "
+        "Version/17.4.1 Safari/605.1.15",
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:130.0) Gecko/20100101 Firefox/130.0",
     ]
     ACCEPT_LANGUAGES = ["en-US,en;q=0.9", "en-GB,en;q=0.8", "fr-FR,fr;q=0.9"]
@@ -47,19 +48,19 @@ class Config:
     ]
 
     LOCATIONS = [
-        ("America/New_York", Geolocation(longitude=-74.006, latitude=40.7128)),
-        ("America/Chicago", Geolocation(longitude=-87.6298, latitude=41.8781)),
-        ("America/Los_Angeles", Geolocation(longitude=-118.2437, latitude=34.0522)),
-        ("America/Denver", Geolocation(longitude=-104.9903, latitude=39.7392)),
-        ("America/Phoenix", Geolocation(longitude=-112.0740, latitude=33.4484)),
-        ("America/Anchorage", Geolocation(longitude=-149.9003, latitude=61.2181)),
-        ("America/Detroit", Geolocation(longitude=-83.0458, latitude=42.3314)),
-        ("America/Indianapolis", Geolocation(longitude=-86.1581, latitude=39.7684)),
-        ("America/Boise", Geolocation(longitude=-116.2023, latitude=43.6150)),
-        ("America/Juneau", Geolocation(longitude=-134.4197, latitude=58.3019)),
+        ("America/New_York", {"longitude": -74.006, "latitude": 40.7128}),
+        ("America/Chicago", {"longitude": -87.6298, "latitude": 41.8781}),
+        ("America/Los_Angeles", {"longitude": -118.2437, "latitude": 34.0522}),
+        ("America/Denver", {"longitude": -104.9903, "latitude": 39.7392}),
+        ("America/Phoenix", {"longitude": -112.0740, "latitude": 33.4484}),
+        ("America/Anchorage", {"longitude": -149.9003, "latitude": 61.2181}),
+        ("America/Detroit", {"longitude": -83.0458, "latitude": 42.3314}),
+        ("America/Indianapolis", {"longitude": -86.1581, "latitude": 39.7684}),
+        ("America/Boise", {"longitude": -116.2023, "latitude": 43.6150}),
+        ("America/Juneau", {"longitude": -134.4197, "latitude": 58.3019}),
     ]
 
-    PROXIES: list[ProxySettings] = [
+    PROXIES = [
         # Example proxy configuration, replace with actual proxies if needed
         # {
         #     "server": "http://ip_server:port",

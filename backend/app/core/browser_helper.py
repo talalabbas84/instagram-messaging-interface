@@ -1,6 +1,6 @@
 import random
 import asyncio
-from playwright.async_api import async_playwright, Geolocation, ProxySettings
+from playwright.async_api import async_playwright
 from app.core.config import Config
 from app.core.agentql_wrapper import AgentQLWrapper
 
