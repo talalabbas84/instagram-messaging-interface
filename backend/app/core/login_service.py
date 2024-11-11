@@ -142,6 +142,18 @@ class LoginService:
         except InvalidTokenError:
             raise InvalidTokenError()
             
+    async def logout(self, username: str):
+        """Log out the user by removing session and refresh token from Redis."""
+        try:
+            # Remove session data from Redis
+            self.session_service.delete_session(username)
+            # Remove refresh token from Redis
+            self.session_service.delete_session(f"{username}_refresh_token")
+            logger.info(f"User {username} successfully logged out.")
+            return {"status": "Logout successful"}
+        except InvalidSessionError as e:
+            logger.error(f"Error during logout for {username}: {str(e)}")
+            raise e
 
     def generate_jwt_tokens(self, username: str):
         return self.token_service.generate_tokens(username)
