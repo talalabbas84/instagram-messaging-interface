@@ -5,8 +5,12 @@ import logging
 from app.core.agentql_wrapper import AgentQLWrapper
 from app.core.browser_helper import BrowserHelper
 from app.core.config import Config
-from app.core.custom_exceptions import (InvalidSessionError, InvalidTokenError,
-                                        LoginFailedError, TokenExpiredError)
+from app.core.custom_exceptions import (
+    InvalidSessionError,
+    InvalidTokenError,
+    LoginFailedError,
+    TokenExpiredError,
+)
 from app.core.token_service import TokenService
 from fastapi import HTTPException
 
