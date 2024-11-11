@@ -10,6 +10,7 @@ ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")  # Ensure this is securely stored
 
 fernet = Fernet(ENCRYPTION_KEY) if ENCRYPTION_KEY else None
 
+
 class SessionService:
     def __init__(self):
         if not ENCRYPTION_KEY:

@@ -3,15 +3,16 @@
 import agentql
 from playwright.async_api import Page
 
+
 class AgentQLWrapper:
     @staticmethod
     async def wrap_async(page: Page):
         """
         Wraps a Playwright page object with AgentQL for querying.
-        
+
         Args:
             page (Page): The Playwright page object to be wrapped.
-        
+
         Returns:
             wrapped_page: The page wrapped with AgentQL for asynchronous use.
         """
@@ -25,7 +26,7 @@ class AgentQLWrapper:
         Args:
             wrapped_page: The page object wrapped with AgentQL.
             query (str): The AgentQL query string to locate elements.
-        
+
         Returns:
             response: The result of the AgentQL query, containing the requested elements.
         """

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Config:
     # AgentQL API Key
     AGENTQL_API_KEY = os.getenv("AGENTQL_API_KEY")
@@ -30,7 +31,11 @@ class Config:
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:130.0) Gecko/20100101 Firefox/130.0",
     ]
     ACCEPT_LANGUAGES = ["en-US,en;q=0.9", "en-GB,en;q=0.8", "fr-FR,fr;q=0.9"]
-    REFERERS = ["https://www.google.com", "https://www.bing.com", "https://duckduckgo.com"]
+    REFERERS = [
+        "https://www.google.com",
+        "https://www.bing.com",
+        "https://duckduckgo.com",
+    ]
     BROWSER_IGNORED_ARGS = ["--enable-automation", "--disable-extensions"]
     BROWSER_ARGS = [
         "--disable-xss-auditor",
@@ -40,7 +45,7 @@ class Config:
         "--disable-features=IsolateOrigins,site-per-process",
         "--disable-infobars",
     ]
-    
+
     LOCATIONS = [
         ("America/New_York", Geolocation(longitude=-74.006, latitude=40.7128)),
         ("America/Chicago", Geolocation(longitude=-87.6298, latitude=41.8781)),
@@ -53,7 +58,7 @@ class Config:
         ("America/Boise", Geolocation(longitude=-116.2023, latitude=43.6150)),
         ("America/Juneau", Geolocation(longitude=-134.4197, latitude=58.3019)),
     ]
-    
+
     PROXIES: list[ProxySettings] = [
         # Example proxy configuration, replace with actual proxies if needed
         # {

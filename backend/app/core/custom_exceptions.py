@@ -2,6 +2,7 @@
 
 from fastapi import HTTPException
 
+
 class InvalidSessionError(HTTPException):
     def __init__(self, detail: str = "Invalid session. Please log in again."):
         super().__init__(status_code=401, detail=detail)

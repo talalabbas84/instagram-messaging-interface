@@ -2,12 +2,12 @@ import random
 import asyncio
 from playwright.async_api import async_playwright, Geolocation, ProxySettings
 from app.core.config import Config
-from app.core.agentql_wrapper import AgentQLWrapper 
+from app.core.agentql_wrapper import AgentQLWrapper
 
 import os
 
-class BrowserHelper:
 
+class BrowserHelper:
     _playwright = None
     _browser = None
 
@@ -47,14 +47,16 @@ class BrowserHelper:
 
         # Create browser context with options
         context = await BrowserHelper._browser.new_context(**context_options)
-        await context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        
+        await context.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+        )
+
         # Open a new page in the context
         page = await context.new_page()
-        
+
         # Perform random scroll on the page for stealth
         await BrowserHelper.random_scroll(page)
-        
+
         return context, page
 
     @staticmethod
