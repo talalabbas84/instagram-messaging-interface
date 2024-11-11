@@ -52,7 +52,7 @@ export function useSession() {
           }
         }
       } else {
-        setError('No access token found')
+        // setError('No access token found')
       }
     }
 
