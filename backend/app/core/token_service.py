@@ -1,26 +1,28 @@
-from datetime import datetime, timedelta
-
+# app/core/token_service.py
 import jwt
-
+from datetime import datetime, timedelta
+from app.core.custom_exceptions import TokenExpiredError, InvalidTokenError
+from app.core.config import Config  # Import Config
 
 class TokenService:
     @staticmethod
     def generate_tokens(username: str):
-        """
-        Generates an access token and a refresh token for the given username.
-        """
-        pass
+        access_token = TokenService._generate_token(username, Config.ACCESS_TOKEN_EXPIRATION_MINUTES)
+        refresh_token = TokenService._generate_token(username, Config.REFRESH_TOKEN_EXPIRATION_DAYS * 1440)
+        return access_token, refresh_token
 
     @staticmethod
     def _generate_token(username: str, expiration_minutes: int):
-        """
-        Generates a JWT token with the specified expiration time for the given username.
-        """
-        pass
+        expiration = datetime.utcnow() + timedelta(minutes=expiration_minutes)
+        token = jwt.encode({"sub": username, "exp": expiration}, Config.JWT_SECRET_KEY, algorithm=Config.JWT_ALGORITHM)
+        return token
 
     @staticmethod
     def validate_token(token: str) -> str:
-        """
-        Validates the provided JWT token and returns the username if valid.
-        """
-        pass
+        try:
+            payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=[Config.JWT_ALGORITHM])
+            return payload.get("sub")
+        except jwt.ExpiredSignatureError:
+            raise TokenExpiredError()
+        except jwt.InvalidTokenError:
+            raise InvalidTokenError()
