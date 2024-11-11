@@ -27,6 +27,6 @@ jobs:
 
       - name: Lint and format code
         run: |
-          black --check .
-          flake8 .
+          black --check backend
+          flake8 backend
         working-directory: ./backend
