@@ -1,6 +1,7 @@
-import os
-import redis
 import logging
+import os
+
+import redis
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)

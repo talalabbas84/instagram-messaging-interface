@@ -1,9 +1,10 @@
 # app/utils/session_service.py
 
 import json
-from cryptography.fernet import Fernet
-import os
 import logging
+import os
+
+from cryptography.fernet import Fernet
 
 logger = logging.getLogger(__name__)
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")  # Ensure this is securely stored

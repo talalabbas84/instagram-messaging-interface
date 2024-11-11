@@ -1,6 +1,5 @@
-from fastapi import FastAPI, Depends
 from app.routers import auth, messages
-
+from fastapi import Depends, FastAPI
 
 app = FastAPI()
 app.include_router(auth.router)

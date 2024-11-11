@@ -1,5 +1,6 @@
-import jwt
 from datetime import datetime, timedelta
+
+import jwt
 
 
 class TokenService:

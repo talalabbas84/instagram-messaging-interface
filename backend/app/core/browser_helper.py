@@ -1,10 +1,10 @@
-import random
 import asyncio
-from playwright.async_api import async_playwright
-from app.core.config import Config
-from app.core.agentql_wrapper import AgentQLWrapper
-
 import os
+import random
+
+from app.core.agentql_wrapper import AgentQLWrapper
+from app.core.config import Config
+from playwright.async_api import async_playwright
 
 
 class BrowserHelper:

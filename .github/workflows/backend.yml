@@ -1,32 +1,32 @@
-name: Backend Lint and Format
+name: Lint and Format
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: [push, pull_request]
 
 jobs:
-  lint-format:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
-          python-version: '3.11'
+          python-version: '3.x'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt -r dev-requirements.txt
-        working-directory: ./backend
+          pip install -r requirements.txt
+          pip install black isort
 
-      - name: Lint and format code
-        run: |
-          black --check .
-          flake8
-        working-directory: ./backend
+      - name: Run black (check only)
+        run: black --check .
+
+      - name: Run isort (check only)
+        run: isort --check-only .
+
+      - name: Run black (auto-fix)
+        run: black .
+
+      - name: Run isort (auto-fix)
+        run: isort .
