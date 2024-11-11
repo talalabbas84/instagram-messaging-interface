@@ -18,7 +18,7 @@ import { LoginForm } from './LoginForm'
 import { MessageForm } from './MessageForm'
 
 export default function InstagramMessaging() {
-  const {  isLoggedIn, login, logout, refreshToken } =
+  const {  isLoggedIn, login, logout, refreshToken, error, setError } =
     useSession()
 
   const [user, setUser] = useState<User>({
@@ -31,25 +31,29 @@ export default function InstagramMessaging() {
     message: '',
   })
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [jsonInput, setJsonInput] = useState('')
   const [activeTab, setActiveTab] = useState<'manual' | 'json'>('manual')
 
   // Login Handler
   const handleLogin = async (isMessage=false) => {
+    // if empty username or password
+    if (!user.username || !user.password) {
+      setError('Please fill in all fields')
+      return
+    }
+
     setIsLoading(true)
     setError(null)
-    await login(user)
-    if (isMessage) {
-      handleSendMessage()
-    }
+    await login(user,isMessage, handleSendMessage)
+
     setIsLoading(false)
 
   }
 
   // Send Message Handler
   const handleSendMessage = async () => {
+    console.log('handleSendMessage', 'dsadsa')
     setIsLoading(true)
     setError(null)
     if (!message.recipient || !message.message) {
@@ -122,10 +126,18 @@ export default function InstagramMessaging() {
   
     // handleSendMessage()
     // login and send message
-    handleLogin(true)
+    try {
+          handleLogin(true)
+      
+    } catch (error) {
+      console.log(error, 'error')
+      
+    }
     // handleSendMessage()
     
   }
+
+  console.log(error, 'error')
 
 
   return (
@@ -175,6 +187,8 @@ export default function InstagramMessaging() {
                 setJsonInput={handleJsonChange}
                 error={error}
                 handleSubmit={handleSubmit}
+                setUser={setUser}
+                setMessage={setMessage}
               />
             </TabsContent>
           </Tabs>

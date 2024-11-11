@@ -18,6 +18,7 @@ export function JsonInputForm({
   setUser,
   setMessage,
   handleSubmit,
+  error,
 }: JsonInputFormProps) {
   const [localError, setLocalError] = useState<string | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +59,7 @@ export function JsonInputForm({
 
   return (
     <div className="space-y-2">
-      {/* {error && <p className="text-red-500 text-sm">{error}</p>} */}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
       {localError && <p className="text-red-500 text-sm">{localError}</p>}
 
       <Label htmlFor="json-input" className="text-sm font-medium">
