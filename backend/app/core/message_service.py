@@ -70,7 +70,7 @@ class MessageService:
             if not await self._send_message(wrapped_page, recipient, message):
                 raise HTTPException(status_code=500, detail="Message sending failed at unknown point.")
             
-            return {"status": "Message sent successfully"}
+            return "success"
 
         except InvalidSessionError as session_exc:
             logger.error(f"Invalid session for {username}: {session_exc.detail}")

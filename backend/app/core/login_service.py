@@ -96,7 +96,7 @@ class LoginService:
             )
             logger.info(f"Login successful for user {username}")
 
-            return {"status": "Login successful", "access_token": access_token, "refresh_token": refresh_token}
+            return access_token, refresh_token
 
         except LoginFailedError as login_exc:
             logger.error(f"Login failed for {username}: {login_exc.detail}")

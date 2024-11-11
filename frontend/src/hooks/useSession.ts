@@ -1,30 +1,31 @@
 // hooks/useSession.ts
-import { useEffect, useState } from 'react';
-import { User } from '../types/types';
+import { useEffect, useState } from 'react'
+import { User } from '../types/types'
+import SessionService from '../services/sessionService'
 
 export function useSession() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User>({ username: '', password: '' });
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('instagramUser');
+    const storedUser = SessionService.getStoredUser()
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsLoggedIn(true);
+      setUser(storedUser)
+      setIsLoggedIn(true)
     }
-  }, []);
+  }, [])
 
   const login = (user: User) => {
-    setUser(user);
-    setIsLoggedIn(true);
-    localStorage.setItem('instagramUser', JSON.stringify(user));
-  };
+    setUser(user)
+    setIsLoggedIn(true)
+    SessionService.saveUser(user) // Save user to storage
+  }
 
   const logout = () => {
-    setUser({ username: '', password: '' });
-    setIsLoggedIn(false);
-    localStorage.removeItem('instagramUser');
-  };
+    setUser(null)
+    setIsLoggedIn(false)
+    SessionService.clearUser() // Clear user from storage
+  }
 
-  return { isLoggedIn, user, login, logout, setUser };
+  return { isLoggedIn, user, login, logout, setUser }
 }

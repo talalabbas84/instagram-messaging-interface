@@ -19,9 +19,9 @@ async def send_message(
     try:
         token = authorization.split(" ")[1]
         username = jwt_service.validate_token(token)  # Use JWTService to validate the token
-        print(username, 'dsadsa')
         result = await message_service.send_message(request.recipient, request.message, username)
-        return result
+        if result == "success":
+            return {"status": "success", "message": "Message sent", "data": result}
     except HTTPException as e:
         raise e
     except Exception as e:
