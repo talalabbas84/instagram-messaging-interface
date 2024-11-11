@@ -21,3 +21,7 @@ class InvalidTokenError(HTTPException):
 class LoginFailedError(HTTPException):
     def __init__(self, detail: str = "Login failed due to invalid credentials"):
         super().__init__(status_code=401, detail=detail)
+
+class InvalidCredentialsError(HTTPException):
+    def __init__(self, detail: str = "Invalid credentials"):
+        super().__init__(status_code=401, detail=detail)

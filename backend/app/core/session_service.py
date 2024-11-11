@@ -57,3 +57,7 @@ class SessionService:
         """Decrypt session data securely."""
         decrypted_data = fernet.decrypt(encrypted_data)
         return json.loads(decrypted_data.decode("utf-8"))
+    
+    def get_session_state(self, username: str):
+        # Your logic to retrieve session state, e.g., from Redis or database
+        return self.get_session(username)  # Assuming you have a `get_session` method

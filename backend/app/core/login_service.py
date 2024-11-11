@@ -3,9 +3,9 @@
 from fastapi import HTTPException
 from app.core.browser_helper import BrowserHelper
 from app.core.agentql_wrapper import AgentQLWrapper
-from app.core.custom_exceptions import InvalidSessionError, TokenExpiredError, InvalidTokenError, LoginFailedError
+from app.core.custom_exceptions import InvalidSessionError, LoginFailedError, InvalidCredentialsError
 from app.core.config import Config
-from app.core.token_service import TokenService
+from app.core.jwt_service import JWTService
 import logging
 import asyncio
 
@@ -13,11 +13,12 @@ logger = logging.getLogger(__name__)
 
 class LoginService:
     LOGIN_URL = "https://www.instagram.com/"
-    SESSION_TTL = Config.ACCESS_TOKEN_EXPIRATION_MINUTES * 60 
+    SESSION_TTL = 7 * 24 * 60 * 60
 
-    def __init__(self, session_service, token_service):
+    def __init__(self, session_service, jwt_service: JWTService):
         self.session_service = session_service
-        self.token_service = token_service
+        # self.jwt_service = jwt_service  # Inject JWTService
+        self.jwt_service = JWTService(self.session_service)  
 
     # Define AgentQL queries as class attributes
     LOGIN_QUERY = """
@@ -77,20 +78,17 @@ class LoginService:
             await AgentQLWrapper.wait_for_page_ready_state(wrapped_page)
             logger.info(f"Login form submitted for user {username}")
 
-            await asyncio.sleep(4)
-
-
             # Check for successful login and handle prompts
             save_info_response = await AgentQLWrapper.query_elements(wrapped_page, self.SAVE_INFO_PROMPT_QUERY)
             post_login_response = await AgentQLWrapper.query_elements(wrapped_page, self.POST_LOGIN_QUERY)
             if not post_login_response.home_button and not post_login_response.messages_button and not save_info_response.save_info_button:
                 logger.error(f"Login failed for {username}: home button not found")
-                raise LoginFailedError("Unable to confirm successful login.")
+                raise InvalidCredentialsError("Unable to confirm successful login.")
 
             # Save session and tokens
             session_state = await context.storage_state()
             self.session_service.save_session(username, session_state, ttl=self.SESSION_TTL)
-            access_token, refresh_token = self.generate_jwt_tokens(username)
+            access_token, refresh_token = self.jwt_service.generate_tokens(username)  # Generate tokens using JWTService
             self.session_service.save_session(
                 f"{username}_refresh_token",
                 refresh_token,
@@ -111,37 +109,9 @@ class LoginService:
             logger.info(f"Browser context for {username} closed after login attempt")
 
     async def refresh_access_token(self, refresh_token: str):
-        """Generate a new access token if the refresh token is valid, and refresh session TTL."""
-        try:
-            username = self.token_service.validate_token(refresh_token)
+        """Generate a new access token if the refresh token is valid."""
+        return await self.jwt_service.refresh_access_token(refresh_token)  # No await needed
 
-            if not username:
-                raise InvalidTokenError(detail="Invalid refresh token")
-
-            logger.info(f"Refreshing access token for {username}")
-
-            # Check if refresh_token is the latest one in Redis
-            stored_refresh_token = self.session_service.get_session(f"{username}_refresh_token")
-            if stored_refresh_token != refresh_token:
-                raise InvalidTokenError(detail="Invalid or outdated refresh token")
-
-            # Generate a new access token and refresh token
-            access_token, new_refresh_token = self.generate_jwt_tokens(username)
-
-            # Store new refresh token in Redis with the correct TTL from Config
-            self.session_service.save_session(
-                f"{username}_refresh_token",
-                new_refresh_token,
-                ttl=Config.REFRESH_TOKEN_EXPIRATION_DAYS * 24 * 60 * 60
-            )
-
-            return {"access_token": access_token, "refresh_token": new_refresh_token}
-
-        except TokenExpiredError:
-            raise TokenExpiredError()
-        except InvalidTokenError:
-            raise InvalidTokenError()
-            
     async def logout(self, username: str):
         """Log out the user by removing session and refresh token from Redis."""
         try:
@@ -154,6 +124,3 @@ class LoginService:
         except InvalidSessionError as e:
             logger.error(f"Error during logout for {username}: {str(e)}")
             raise e
-
-    def generate_jwt_tokens(self, username: str):
-        return self.token_service.generate_tokens(username)
