@@ -1,9 +1,9 @@
-Here is a structured `README.md` file for your project:
+Here’s the corrected `README.md` file with the correct indentation and formatting to avoid any issues with Markdown rendering:
 
 ```markdown
 # Instagram Messaging Interface
 
-This project is an Instagram Messaging Interface that enables secure login, messaging, and API-based message sending via Instagram. It uses a FastAPI backend and a React frontend built with Vite, TailwindCSS, and ShadCN UI. 
+This project is an Instagram Messaging Interface that enables secure login, messaging, and API-based message sending via Instagram. It uses a FastAPI backend and a React frontend built with Vite, TailwindCSS, and ShadCN UI.
 
 ---
 
@@ -27,8 +27,7 @@ This project is an Instagram Messaging Interface that enables secure login, mess
 
 ## Project Structure
 
-```
-
+```plaintext
 instagram-messaging-interface/
 ├── .github/
 │   └── workflows/              # GitHub Actions for CI/CD
@@ -46,7 +45,6 @@ instagram-messaging-interface/
 │   ├── package.json            # NPM dependencies for the frontend
 │   └── .prettierrc             # Prettier configuration
 └── docker-compose.yml          # Docker Compose file for multi-container setup
-
 ```
 
 ---
@@ -160,7 +158,6 @@ This project can be run using Docker for easier setup of frontend, backend, and 
   ```
 
 - **Backend**:
-
   ```bash
   black .          # Format code with Black
   flake8 .         # Lint code with Flake8
@@ -178,7 +175,6 @@ This project can be run using Docker for easier setup of frontend, backend, and 
 ## License
 
 This project is licensed under the MIT License.
-
 ```
 
-This README provides a complete overview of the project structure, setup instructions for both frontend and backend, Docker setup, code quality checks, and CI/CD information. Adjust any specific details based on your actual configurations and project requirements.
+This structure ensures proper indentation, Markdown code blocks, and organized sections for easy reading and navigation.
