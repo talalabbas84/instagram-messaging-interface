@@ -1,0 +1,12 @@
+[tool.black]
+line-length = 88  # Set to the same as in Flake8 for consistency
+target-version = ['py311']
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | __pycache__
+  | node_modules
+  | env
+)/
