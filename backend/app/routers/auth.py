@@ -16,7 +16,12 @@ router = APIRouter()
 
 @router.post("/login")
 async def login(request: LoginRequest, login_service: LoginService = Depends(get_login_service)):
-    return await login_service.login(request.username, request.password)
+    try:
+        result = await login_service.login(request.username, request.password)
+        return result
+    except HTTPException as e:
+        raise e
+
 
 
 @router.post("/refresh-token")
