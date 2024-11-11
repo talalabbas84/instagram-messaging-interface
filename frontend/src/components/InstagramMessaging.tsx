@@ -40,27 +40,9 @@ export default function InstagramMessaging() {
   const handleLogin = async () => {
     setIsLoading(true)
     setError(null)
-    if (!user?.username || !user.password) {
-      setError('Please fill in all fields')
-      setIsLoading(false)
-      return
-    }
+    await login(user)
+    setIsLoading(false)
 
-    try {
-      const response = await api.post('/login', {
-        username: user.username,
-        password: user.password,
-      })
-      const { access_token, refresh_token } = response.data.data
-      localStorage.setItem('access_token', access_token) // Store access_token in localStorage
-      localStorage.setItem('refresh_token', refresh_token) // Store refresh_token in localStorage
-      setSuccess('Logged in successfully!')
-      login(user)
-    } catch (err) {
-      setError('Login failed')
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   // Send Message Handler
@@ -74,8 +56,8 @@ export default function InstagramMessaging() {
     }
 
     try {
-      const accessToken = localStorage.getItem('access_token')
-      const response = await api.post(
+      const accessToken = localStorage.getItem('token')
+       await api.post(
         '/send-message',
         {
           recipient: message.recipient,
@@ -89,21 +71,24 @@ export default function InstagramMessaging() {
       )
       setSuccess(`Message sent to ${message.recipient}!`)
       setMessage({ recipient: '', message: '' })
-    } catch (err) {
-      console.error(err)
-      if(err.response && err.response.data && err.response.data.detail) {
-        
+    } catch (err : unknown) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      if (err.response && err.response.data && err.response.data.detail) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         setError(err.response.data.detail)
-      } else
-      {
-      if (err.response && err.response.status === 401) {
-        // If 401 error occurs, try refreshing the token
-        await refreshToken()
-        handleSendMessage() // Retry sending message after token refresh
       } else {
-        setError('Failed to send message')
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if (err.response && err.response.status === 401) {
+          // If 401 error occurs, try refreshing the token
+          await refreshToken()
+          handleSendMessage() // Retry sending message after token refresh
+        } else {
+          setError('Failed to send message')
+        }
       }
-    }
     } finally {
       setIsLoading(false)
     }

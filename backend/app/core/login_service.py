@@ -83,7 +83,8 @@ class LoginService:
             post_login_response = await AgentQLWrapper.query_elements(wrapped_page, self.POST_LOGIN_QUERY)
             if not post_login_response.home_button and not post_login_response.messages_button and not save_info_response.save_info_button:
                 logger.error(f"Login failed for {username}: home button not found")
-                raise InvalidCredentialsError("Unable to confirm successful login.")
+                raise InvalidCredentialsError("Invalid username or password")
+
 
             # Save session and tokens
             session_state = await context.storage_state()
@@ -103,7 +104,7 @@ class LoginService:
             raise login_exc
         except Exception as e:
             logger.exception(f"Unexpected error during login for {username}: {str(e)}")
-            raise HTTPException(status_code=500, detail="An unexpected error occurred during login")
+            raise HTTPException(status_code=500, detail=f"Unexpected error during login for {username}: {str(e)}")
         finally:
             await context.close()
             logger.info(f"Browser context for {username} closed after login attempt")
