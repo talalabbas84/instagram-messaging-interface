@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
+from app.core.login_service import LoginService  # Updated import
+from app.dependencies import get_login_service  # Updated import from dependencies
 
 # Placeholder for LoginRequest model
 class LoginRequest(BaseModel):
@@ -13,9 +15,9 @@ class RefreshTokenRequest(BaseModel):
 router = APIRouter()
 
 @router.post("/login")
-async def login(request: LoginRequest):
-    # Placeholder for login logic
-    return {"message": "Login endpoint"}
+async def login(request: LoginRequest, login_service: LoginService = Depends(get_login_service)):
+    return await login_service.login(request.username, request.password)
+
 
 @router.post("/refresh-token")
 async def refresh_token(request: RefreshTokenRequest):
