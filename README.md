@@ -1,67 +1,97 @@
-Here’s the corrected `README.md` file with the correct indentation and formatting to avoid any issues with Markdown rendering:
-
 ```markdown
 # Instagram Messaging Interface
 
-This project is an Instagram Messaging Interface that enables secure login, messaging, and API-based message sending via Instagram. It uses a FastAPI backend and a React frontend built with Vite, TailwindCSS, and ShadCN UI.
-
----
+This project is an Instagram Messaging Interface that allows users to securely log in, send messages via Instagram, and handle both manual and JSON-based API inputs. The backend is built with FastAPI, using Redis for session management, while the frontend leverages React with Vite, TailwindCSS, and ShadCN UI.
 
 ## Table of Contents
-
 1. [Project Structure](#project-structure)
-2. [Frontend](#frontend)
-   - [Tech Stack](#frontend-tech-stack)
-   - [Setup and Installation](#frontend-setup-and-installation)
-   - [Scripts](#frontend-scripts)
-3. [Backend](#backend)
-   - [Tech Stack](#backend-tech-stack)
-   - [Setup and Installation](#backend-setup-and-installation)
-   - [Scripts](#backend-scripts)
-4. [Docker Setup](#docker-setup)
-5. [Code Quality and Formatting](#code-quality-and-formatting)
-6. [CI/CD](#ci-cd)
-7. [License](#license)
-
----
+2. [Features](#features)
+3. [Tech Stack](#tech-stack)
+4. [Prerequisites](#prerequisites)
+5. [Environment Variables](#environment-variables)
+6. [Setup and Installation](#setup-and-installation)
+7. [Usage](#usage)
+8. [Future Improvements](#future-improvements)
+9. [License](#license)
 
 ## Project Structure
 
 ```plaintext
 instagram-messaging-interface/
-├── .github/
-│   └── workflows/              # GitHub Actions for CI/CD
-│       ├── backend.yml         # Workflow for backend linting and formatting
-│       └── frontend.yml        # Workflow for frontend linting and formatting
 ├── backend/                    # Backend code for FastAPI
 │   ├── app/                    # Core backend application
-│   ├── tests/                  # Test files for the backend
+│   ├── tests/                  # Test files for backend
+│   ├── .env                    # Environment variables for the backend
 │   ├── requirements.txt        # Dependencies for production
 │   ├── dev-requirements.txt    # Development dependencies
-│   ├── pyproject.toml          # Backend configuration for black and other tools
-│   └── .flake8                 # Flake8 configuration
+│   └── pyproject.toml          # Backend configuration for Black and other tools
 ├── frontend/                   # Frontend code for React
 │   ├── src/                    # Source code for frontend
+│   ├── .env                    # Environment variables for the frontend
 │   ├── package.json            # NPM dependencies for the frontend
-│   └── .prettierrc             # Prettier configuration
-└── docker-compose.yml          # Docker Compose file for multi-container setup
+└── .github/
+    └── workflows/              # GitHub Actions for CI/CD
 ```
 
----
+## Features
 
-## Frontend
+- **Secure Login**: Supports Instagram login with session management via Redis.
+- **Message Sending**: Allows sending messages to specified recipients with input validation and error handling.
+- **Dual Input**: Supports manual entry and JSON-based API input for automation.
+- **Session State**: Tracks session state to manage login persistence until logout.
 
-### Frontend Tech Stack
+## Tech Stack
 
-- **React** with TypeScript
-- **Vite** for fast build and development
+### Frontend
+- **React** (with TypeScript)
+- **Vite** for fast builds and development
 - **TailwindCSS** for styling
-- **ShadCN UI** for component library
-- **Prettier** for code formatting
+- **ShadCN UI** for reusable components
 
-### Frontend Setup and Installation
+### Backend
+- **FastAPI** for the REST API
+- **AgentQL** for backend interaction with Instagram
+- **Redis** for session management
+- **Black** and **Flake8** for code formatting and linting
 
-1. Navigate to the `frontend` folder:
+## Prerequisites
+
+- **Redis**: Ensure Redis is installed and running, as it is required for session management.
+- **Python 3.8+** and **Node.js** (for backend and frontend respectively)
+
+## Environment Variables
+
+### Backend `.env` Configuration
+
+Create a `.env` file in the `backend` directory with the following variables:
+
+```plaintext
+# AgentQL and JWT configurations
+AGENTQL_API_KEY=
+ENCRYPTION_KEY=s3d1cBB0-w1Sj3O6F7wGnh_X4vZg7RCdfE9JomjW5so=
+JWT_SECRET_KEY=EnfLRdf-lqSDLdFWfOV9HgpplsQbYB1KofZQTBvnFdnmaQoadE7CRA
+
+# Redis configuration
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=your_password    # Leave this blank if no password is set
+REDIS_ENABLED=true
+```
+
+### Frontend `.env` Configuration
+
+Create a `.env` file in the `frontend` directory with the following variable:
+
+```plaintext
+# API URL for Backend
+VITE_API_URL=http://0.0.0.0:8000
+```
+
+## Setup and Installation
+
+### Frontend Setup
+
+1. Navigate to the frontend folder:
     ```bash
     cd frontend
     ```
@@ -76,33 +106,14 @@ instagram-messaging-interface/
     npm run dev
     ```
 
-### Frontend Scripts
+### Backend Setup
 
-- **`npm run dev`**: Starts the development server.
-- **`npm run build`**: Builds the frontend for production.
-- **`npm run format`**: Formats code with Prettier.
-- **`npm run lint`**: Runs ESLint to analyze code quality.
-
----
-
-## Backend
-
-### Backend Tech Stack
-
-- **FastAPI**: For building RESTful APIs
-- **AgentQL**: For backend actions with Instagram
-- **Redis**: For caching and session management
-- **Flake8**: For linting Python code
-- **Black**: For formatting Python code
-
-### Backend Setup and Installation
-
-1. Navigate to the `backend` folder:
+1. Navigate to the backend folder:
     ```bash
     cd backend
     ```
 
-2. Create a virtual environment (optional but recommended):
+2. (Optional) Create a virtual environment:
     ```bash
     python3 -m venv venv
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
@@ -118,63 +129,24 @@ instagram-messaging-interface/
     uvicorn app.main:app --reload
     ```
 
-### Backend Scripts
+## Usage
 
-- **`uvicorn app.main:app --reload`**: Starts the FastAPI server in development mode.
-- **`black .`**: Formats Python code.
-- **`flake8 .`**: Lints Python code.
+1. **Login**: Use the login form to enter Instagram credentials. If successful, a session will be created.
+2. **Send Message**: After login, enter recipient details and the message, then send. The app handles errors, such as invalid credentials and recipient not found.
+3. **JSON Input Mode**: Use JSON format for input data for automated message sending.
 
----
+## Future Improvements
 
-## Docker Setup
-
-This project can be run using Docker for easier setup of frontend, backend, and Redis.
-
-1. Ensure Docker is installed on your system.
-2. In the root directory, run:
-    ```bash
-    docker-compose up --build
-    ```
-   This will start up both frontend and backend services along with Redis.
-
-3. Access the application:
-   - Frontend: [http://localhost:3000](http://localhost:3000)
-   - Backend: [http://localhost:8000](http://localhost:8000)
-
----
-
-## Code Quality and Formatting
-
-- **Frontend**: Uses Prettier for consistent formatting.
-- **Backend**: Uses Black for code formatting and Flake8 for linting.
-- **GitHub Actions**: Workflows are set up to automatically check formatting and linting on every push and pull request.
-
-### Running Code Quality Checks Locally
-
-- **Frontend**:
-  ```bash
-  npm run format   # Prettier formatting
-  npm run lint     # ESLint linting
-  ```
-
-- **Backend**:
-  ```bash
-  black .          # Format code with Black
-  flake8 .         # Lint code with Flake8
-  ```
-
----
-
-## CI/CD
-
-- **GitHub Actions**:
-  - Frontend and backend workflows are set up to automatically lint and format code on every push to the main branch or on pull requests.
-
----
+- **Dockerization**: Future plans include adding a stable Docker setup to containerize the frontend, backend, and Redis for easy deployment.
+- **Unit Testing**: Add unit tests to ensure code reliability and maintainability.
 
 ## License
 
 This project is licensed under the MIT License.
 ```
 
-This structure ensures proper indentation, Markdown code blocks, and organized sections for easy reading and navigation.
+### Key Points
+- **Environment Variables**: Clear instructions for creating `.env` files in both `backend` and `frontend` directories based on your directory structure.
+- **Future Improvements**: Dockerization and testing enhancements are suggested without detailed Docker setup to avoid current bugs.
+
+This README should now be well-aligned with your project setup. Let me know if you need further customization!
