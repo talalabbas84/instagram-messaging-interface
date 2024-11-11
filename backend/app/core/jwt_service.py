@@ -65,8 +65,7 @@ class JWTService:
         Validates the given access token and generates a new access token if valid.
         """
         try:
-            username = self.validate_token(access_token)  # Call the validate_token method directly
-            print(username)
+            username = self.validate_token(access_token)  
 
             if not username:
                 raise InvalidTokenError(detail="Invalid access token")
@@ -78,7 +77,6 @@ class JWTService:
             
 
             logger.info(f"New access token generated for {username}")
-            print(new_access_token, username)
 
             return new_access_token, username
 

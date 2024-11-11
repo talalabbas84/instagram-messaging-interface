@@ -18,14 +18,10 @@ import { LoginForm } from './LoginForm'
 import { MessageForm } from './MessageForm'
 
 export default function InstagramMessaging() {
-  const {  isLoggedIn, login, logout, refreshToken, error, setError } =
+  const { isLoggedIn, login, logout, refreshToken, error, setError } =
     useSession()
 
-  const [user, setUser] = useState<User>({
-    username: '',
-    password: '',
-  })
-
+  const [user, setUser] = useState<User>({ username: '', password: '' })
   const [message, setMessage] = useState<Message>({
     recipient: '',
     message: '',
@@ -36,26 +32,22 @@ export default function InstagramMessaging() {
   const [activeTab, setActiveTab] = useState<'manual' | 'json'>('manual')
 
   // Login Handler
-  const handleLogin = async (isMessage=false) => {
-    // if empty username or password
+  const handleLogin = async (isMessage = false) => {
     if (!user.username || !user.password) {
       setError('Please fill in all fields')
       return
     }
-
     setIsLoading(true)
     setError(null)
-    await login(user,isMessage, handleSendMessage)
-
+    await login(user, isMessage, handleSendMessage)
     setIsLoading(false)
-
   }
 
   // Send Message Handler
   const handleSendMessage = async () => {
-    console.log('handleSendMessage', 'dsadsa')
     setIsLoading(true)
     setError(null)
+
     if (!message.recipient || !message.message) {
       setError('Please fill in all fields')
       setIsLoading(false)
@@ -64,44 +56,39 @@ export default function InstagramMessaging() {
 
     try {
       const accessToken = localStorage.getItem('token')
-       await api.post(
+      await api.post(
         '/send-message',
-        {
-          recipient: message.recipient,
-          message: message.message,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { recipient: message.recipient, message: message.message },
+        { headers: { Authorization: `Bearer ${accessToken}` } },
       )
       setSuccess(`Message sent to ${message.recipient}!`)
       setMessage({ recipient: '', message: '' })
-    } catch (err : unknown) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      if (err.response && err.response.data && err.response.data.detail) {
+    } catch (err: unknown) {
+      // Check if error is related to token expiration (401 status)
+      if (err && typeof err === 'object' && 'response' in err) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        setError(err.response.data.detail)
-      } else {
+        const status = err.response?.status
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        if (err.response && err.response.status === 401) {
-          // If 401 error occurs, try refreshing the token
+        const detail = err.response?.data?.detail
+        if (status === 401) {
           await refreshToken()
-          handleSendMessage() // Retry sending message after token refresh
+          handleSendMessage() // Retry after refreshing token
+        } else if (detail) {
+          setError(detail)
         } else {
           setError('Failed to send message')
         }
+      } else {
+        setError('Failed to send message due to an unknown error')
       }
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Handle JSON Input
+  // Handle JSON Input for user and message
   const handleJsonChange = (input: string) => {
     setJsonInput(input)
     setError(null)
@@ -117,28 +104,19 @@ export default function InstagramMessaging() {
     }
   }
 
+  // Submit Handler for JSON Input
   const handleSubmit = () => {
-    if (!user.username || !user.password || !message.recipient || !message.message) {
+    if (
+      !user.username ||
+      !user.password ||
+      !message.recipient ||
+      !message.message
+    ) {
       setError('Please fill in all fields')
       return
     }
-    console.log('User:', user, 'Message:', message)
-  
-    // handleSendMessage()
-    // login and send message
-    try {
-          handleLogin(true)
-      
-    } catch (error) {
-      console.log(error, 'error')
-      
-    }
-    // handleSendMessage()
-    
+    handleLogin(true) // Triggers login and message send in sequence if JSON input is used
   }
-
-  console.log(error, 'error')
-
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 flex items-center justify-center p-4">

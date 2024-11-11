@@ -1,5 +1,3 @@
-# app/core/login_service.py
-
 from fastapi import HTTPException
 from app.core.browser_helper import BrowserHelper
 from app.core.agentql_wrapper import AgentQLWrapper
@@ -12,15 +10,16 @@ import asyncio
 logger = logging.getLogger(__name__)
 
 class LoginService:
+    """Service to handle Instagram login, token management, and session handling."""
+
     LOGIN_URL = "https://www.instagram.com/"
-    SESSION_TTL = 7 * 24 * 60 * 60
+    SESSION_TTL = 7 * 24 * 60 * 60  # One-week session expiration time
 
     def __init__(self, session_service, jwt_service: JWTService):
         self.session_service = session_service
-        # self.jwt_service = jwt_service  # Inject JWTService
-        self.jwt_service = JWTService(self.session_service)  
+        self.jwt_service = JWTService(self.session_service)  # Initialize JWTService
 
-    # Define AgentQL queries as class attributes
+    # Define AgentQL queries for locating login elements
     LOGIN_QUERY = """
     {
         login_indicator (text='Log In')
@@ -33,14 +32,12 @@ class LoginService:
         error_message (class='eiCW-')
     }
     """
-
     POST_LOGIN_QUERY = """
     {
         home_button (aria-label='Home' or text='Home')
         messages_button (aria-label='Messages' or text='Messages')
     }
     """
-
     SAVE_INFO_PROMPT_QUERY = """
     {
         save_info_button (text='Save Info' or text='Save information' or text='Save')
@@ -49,27 +46,27 @@ class LoginService:
     """
 
     async def login(self, username: str, password: str):
+        """Logs in a user, saves session data, and generates tokens if successful."""
         try:
             logger.info(f"Starting login for user {username}")
-            self.session_service.delete_session(username)  # Clear existing session if any
+            self.session_service.delete_session(username)  # Clear any existing session
 
-            # Create a stealth browser page and wrap it with AgentQL
+            # Initialize a stealth browser page and wrap it for automated interactions
             context, page = await BrowserHelper.create_stealth_page()
             wrapped_page = await AgentQLWrapper.wrap_async(page)
 
-            # Navigate to the login URL
+            # Navigate to Instagram login page
             await AgentQLWrapper.goto(wrapped_page, self.LOGIN_URL)
             await BrowserHelper.random_scroll(page)
             await AgentQLWrapper.wait_for_page_ready_state(wrapped_page)
             logger.info(f"Login page loaded for {username}")
 
-            # Query login elements
+            # Locate and interact with login form elements
             response = await AgentQLWrapper.query_elements(wrapped_page, self.LOGIN_QUERY)
             if not response.login_indicator:
                 logger.warning(f"Login indicator not found for user {username}")
                 raise LoginFailedError("Login form not detected on page load")
 
-            # Perform login actions
             await BrowserHelper.human_type(response.login_form.username_input, username)
             await BrowserHelper.random_delay()
             await BrowserHelper.human_type(response.login_form.password_input, password)
@@ -78,18 +75,17 @@ class LoginService:
             await AgentQLWrapper.wait_for_page_ready_state(wrapped_page)
             logger.info(f"Login form submitted for user {username}")
 
-            # Check for successful login and handle prompts
+            # Check for login success indicators and handle optional prompts
             save_info_response = await AgentQLWrapper.query_elements(wrapped_page, self.SAVE_INFO_PROMPT_QUERY)
             post_login_response = await AgentQLWrapper.query_elements(wrapped_page, self.POST_LOGIN_QUERY)
             if not post_login_response.home_button and not post_login_response.messages_button and not save_info_response.save_info_button:
                 logger.error(f"Login failed for {username}: home button not found")
                 raise InvalidCredentialsError("Invalid username or password")
 
-
-            # Save session and tokens
+            # Save session data and generate JWT tokens
             session_state = await context.storage_state()
             self.session_service.save_session(username, session_state, ttl=self.SESSION_TTL)
-            access_token, refresh_token = self.jwt_service.generate_tokens(username)  # Generate tokens using JWTService
+            access_token, refresh_token = self.jwt_service.generate_tokens(username)
             self.session_service.save_session(
                 f"{username}_refresh_token",
                 refresh_token,
@@ -110,16 +106,14 @@ class LoginService:
             logger.info(f"Browser context for {username} closed after login attempt")
 
     async def refresh_access_token(self, refresh_token: str):
-        """Generate a new access token if the refresh token is valid."""
-        return await self.jwt_service.refresh_access_token(refresh_token)  # No await needed
+        """Generates a new access token using a valid refresh token."""
+        return await self.jwt_service.refresh_access_token(refresh_token)
 
     async def logout(self, username: str):
-        """Log out the user by removing session and refresh token from Redis."""
+        """Logs out the user by deleting session and refresh token from Redis."""
         try:
-            # Remove session data from Redis
-            self.session_service.delete_session(username)
-            # Remove refresh token from Redis
-            self.session_service.delete_session(f"{username}_refresh_token")
+            self.session_service.delete_session(username)  # Remove session data
+            self.session_service.delete_session(f"{username}_refresh_token")  # Remove refresh token
             logger.info(f"User {username} successfully logged out.")
             return {"status": "Logout successful"}
         except InvalidSessionError as e:

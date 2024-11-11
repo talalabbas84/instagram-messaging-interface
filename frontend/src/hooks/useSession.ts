@@ -8,6 +8,7 @@ export function useSession() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    // Initial authorization to check if there is a valid access token
     const authorize = async () => {
       const accessToken = SessionService.getToken()
       const refreshToken = SessionService.getRefreshToken()
@@ -27,6 +28,7 @@ export function useSession() {
             setError('Authorization failed: ' + err.message)
           }
 
+          // Attempt to refresh the token if authorization with access token fails
           if (refreshToken) {
             try {
               const response = await api.post('/refresh-token', {
@@ -35,7 +37,7 @@ export function useSession() {
               const { access_token, refresh_token: newRefreshToken } =
                 response.data.data
 
-              // Update the new tokens
+              // Update session with new tokens
               SessionService.setToken(access_token)
               SessionService.setRefreshToken(newRefreshToken)
               setIsLoggedIn(true)
@@ -59,8 +61,8 @@ export function useSession() {
 
   const login = async (
     user: { username: string; password: string },
-    isMessage,
-    handleSendMessage,
+    isMessage: boolean,
+    handleSendMessage: () => void,
   ) => {
     try {
       setIsLoading(true)
@@ -69,27 +71,21 @@ export function useSession() {
       const response = await api.post('/login', user)
       const { access_token, refresh_token } = response.data.data
 
-      // Save tokens to session
+      // Save tokens to session storage
       SessionService.setToken(access_token)
       SessionService.setRefreshToken(refresh_token)
       setIsLoggedIn(true)
-      if(isMessage){
+
+      // If login is related to messaging, trigger the message handler
+      if (isMessage) {
         handleSendMessage()
       }
     } catch (err: unknown) {
+      // Handle errors from login request, especially if from server response
       if (err instanceof Error) {
-        if (
-          err &&
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          err.response &&
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          err.response.data &&
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          err.response.data.detail
-        ) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if (err?.response?.data?.detail) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
           setError(`Login failed: ${err.response.data.detail}`)
@@ -101,7 +97,7 @@ export function useSession() {
         if (axiosError.response?.data?.detail) {
           setError(`Login failed: ${axiosError.response.data.detail}`)
         } else {
-          setError('Login failed due to unknown reason')
+          setError('Login failed due to an unknown reason')
         }
       } else {
         setError('An unknown error occurred during login')
@@ -119,7 +115,6 @@ export function useSession() {
       setIsLoggedIn(false)
     } catch (err: unknown) {
       if (err instanceof Error) {
-        
         console.error('Logout failed:', err.message)
         setError(`Logout failed: ${err.message}`)
       } else {
@@ -139,7 +134,7 @@ export function useSession() {
         const { access_token, refresh_token: newRefreshToken } =
           response.data.data
 
-        // Save the new tokens
+        // Update tokens in session storage
         SessionService.setToken(access_token)
         SessionService.setRefreshToken(newRefreshToken)
 
