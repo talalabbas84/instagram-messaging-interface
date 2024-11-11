@@ -1,4 +1,3 @@
-```markdown
 # Instagram Messaging Interface
 
 This project is an Instagram Messaging Interface that allows users to securely log in, send messages via Instagram, and handle both manual and JSON-based API inputs. The backend is built with FastAPI, using Redis for session management, while the frontend leverages React with Vite, TailwindCSS, and ShadCN UI.
@@ -6,6 +5,8 @@ This project is an Instagram Messaging Interface that allows users to securely l
 ## Table of Contents
 1. [Quick Setup](#quick-setup)
 2. [Manual Setup](#manual-setup)
+    - [Frontend Setup](#frontend-setup)
+    - [Backend Setup](#backend-setup)
 3. [Project Structure](#project-structure)
 4. [Features](#features)
 5. [Tech Stack](#tech-stack)
@@ -19,12 +20,14 @@ This project is an Instagram Messaging Interface that allows users to securely l
 
 To quickly set up and run the project, follow these steps:
 
-1. **Make the setup script executable**:
+1. **Navigate to the project root directory** where the `setup.sh` script is located.
+
+2. **Make the setup script executable**:
     ```bash
     chmod +x setup.sh
     ```
 
-2. **Run the setup script**:
+3. **Run the setup script**:
     ```bash
     ./setup.sh
     ```
@@ -36,82 +39,88 @@ This will:
 
 For backend API documentation, visit [http://localhost:8000/docs](http://localhost:8000/docs).
 
+---
+
 ## Manual Setup
 
-If you prefer a step-by-step approach, here’s how to manually set up and run the project:
+If you prefer to set up each part individually, follow the manual setup instructions below.
 
 ### Frontend Setup
 
-1. Navigate to the frontend folder:
+1. **Navigate to the frontend directory**:
     ```bash
     cd frontend
     ```
 
-2. Install dependencies:
+2. **Install frontend dependencies**:
     ```bash
     npm install
     ```
 
-3. Create a `.env` file in the `frontend` directory with the following content:
-    ```plaintext
-    VITE_API_URL=http://0.0.0.0:8000
-    ```
+3. **Set up environment variables**:
+    - Create a `.env` file in the `frontend` directory with the following content:
+        ```plaintext
+        VITE_API_URL=http://0.0.0.0:8000
+        ```
 
-4. Start the development server:
+4. **Start the frontend development server**:
     ```bash
     npm run dev
     ```
 
-   The frontend will run at [http://localhost:5173](http://localhost:5173).
+   The frontend will be accessible at [http://localhost:5173](http://localhost:5173).
 
 ### Backend Setup
 
-1. Navigate to the backend folder:
+1. **Navigate to the backend directory**:
     ```bash
     cd backend
     ```
 
-2. (Optional) Create a virtual environment:
+2. **(Optional) Create a virtual environment**:
     ```bash
     python3 -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
     ```
 
-3. Install dependencies:
+3. **Install backend dependencies**:
     ```bash
     pip install -r requirements.txt -r dev-requirements.txt
     ```
 
-4. Create a `.env` file in the `backend` directory with the following content:
-    ```plaintext
-    # AgentQL and JWT configurations
-    AGENTQL_API_KEY=your_api_key
-    ENCRYPTION_KEY=s3d1cBB0-w1Sj3O6F7wGnh_X4vZg7RCdfE9JomjW5so=
-    JWT_SECRET_KEY=your_secret_key
+4. **Set up environment variables**:
+    - Create a `.env` file in the `backend` directory with the following content:
+        ```plaintext
+        # AgentQL and JWT configurations
+        AGENTQL_API_KEY=your_api_key
+        ENCRYPTION_KEY=s3d1cBB0-w1Sj3O6F7wGnh_X4vZg7RCdfE9JomjW5so=
+        JWT_SECRET_KEY=your_secret_key
 
-    # Redis configuration
-    REDIS_HOST=localhost
-    REDIS_PORT=6379
-    REDIS_PASSWORD=your_password  # Leave blank if no password is set
-    REDIS_ENABLED=true
-    ```
+        # Redis configuration
+        REDIS_HOST=localhost
+        REDIS_PORT=6379
+        REDIS_PASSWORD=your_password  # Leave blank if no password is set
+        REDIS_ENABLED=true
+        ```
 
-5. Install the AgentQL library:
+5. **Install the AgentQL library**:
     ```bash
     pip install agentql
     ```
 
-6. Install the Playwright driver for Chromium:
+6. **Install the Playwright driver for Chromium**:
     ```bash
     playwright install chromium
     ```
 
-7. Start the FastAPI development server:
+7. **Start the FastAPI development server**:
     ```bash
     uvicorn app.main:app --reload
     ```
 
-   The backend will run at [http://localhost:8000](http://localhost:8000). API documentation can be accessed at [http://localhost:8000/docs](http://localhost:8000/docs).
+   The backend will be accessible at [http://localhost:8000](http://localhost:8000). API documentation can be accessed at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+---
 
 ## Project Structure
 
@@ -182,12 +191,3 @@ For backend API documentation, visit [http://localhost:8000/docs](http://localho
 ## License
 
 This project is licensed under the MIT License.
-
-```
-
-### Key Updates
-- **Quick Setup Section**: Added at the top for users who prefer a single-command setup.
-- **Manual Setup Section**: Detailed step-by-step setup instructions provided below Quick Setup.
-- **Clear API Links**: Links to the frontend, backend, and API docs for easy access.
-
-This layout provides both a quick and detailed setup path, making it easier for users to get started based on their preferences. Let me know if any further adjustments are needed!
