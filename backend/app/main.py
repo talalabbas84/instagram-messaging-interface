@@ -1,8 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from app.routers import auth, messages
+
 
 app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello from the Instagram Messaging Interface Backend!"}
+app.include_router(auth.router)
+app.include_router(messages.router)

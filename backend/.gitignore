@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 .DS_Store
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
