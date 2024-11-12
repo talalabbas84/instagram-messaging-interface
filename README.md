@@ -5,30 +5,31 @@ This project is an Instagram Messaging Interface that allows users to securely l
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Quick Setup](#quick-setup)
-3. [Manual Setup](#manual-setup)
+3. [Docker Setup](#docker-setup)
+4. [Manual Setup](#manual-setup)
     - [Frontend Setup](#frontend-setup)
     - [Backend Setup](#backend-setup)
-4. [Project Structure](#project-structure)
-5. [Features](#features)
-6. [Tech Stack](#tech-stack)
-7. [Environment Variables](#environment-variables)
-8. [Usage](#usage)
-9. [JSON Input Handling](#json-input-handling)
-10. [Session State Management](#session-state-management)
-11. [Future Improvements](#future-improvements)
-12. [License](#license)
+5. [Project Structure](#project-structure)
+6. [Features](#features)
+7. [Tech Stack](#tech-stack)
+8. [Environment Variables](#environment-variables)
+9. [Usage](#usage)
+10. [JSON Input Handling](#json-input-handling)
+11. [Session State Management](#session-state-management)
+12. [Future Improvements](#future-improvements)
+13. [License](#license)
 
 ## Prerequisites
 
-- **Redis**: Ensure Redis is installed and running, as it is required for session management.
-- **Python 3.8+** and **Node.js**: Required for backend and frontend setup, respectively.
-- **Docker (optional)**: If Redis is not installed natively, Docker can be used to run a Redis container.
+- **Docker**: Required if you prefer running the project in containers.
+- **Redis**: Ensure Redis is installed and running if you are not using Docker.
+- **Python 3.8+** and **Node.js**: Required for manual backend and frontend setup, respectively.
 
 ---
 
 ## Quick Setup
 
-To quickly set up and run the project, follow these steps:
+To quickly set up and run the project without Docker, follow these steps:
 
 1. **Navigate to the project root directory** where the `setup.sh` script is located.
 
@@ -51,9 +52,36 @@ For backend API documentation, visit [http://localhost:8000/docs](http://localho
 
 ---
 
+## Docker Setup
+
+If you prefer to run the project using Docker, follow these steps:
+
+1. **Build and start the Docker containers**:
+    ```bash
+    docker-compose up --build
+    ```
+
+   This command will build the images and start the frontend, backend, and Redis services as defined in `docker-compose.yml`.
+
+2. **Access the application**:
+   - **Frontend**: [http://localhost:3000](http://localhost:3000)
+   - **Backend**: [http://localhost:8000](http://localhost:8000)
+   - **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+3. **Environment Variables**: The `docker-compose.yml` file includes references to environment variables required by the application. Make sure you have the `.env` files configured in the `frontend` and `backend` directories or use the `.env.example` provided in each folder to set up your own.
+
+4. **Stop Docker Containers**:
+    ```bash
+    docker-compose down
+    ```
+
+This setup allows you to quickly deploy the project using Docker, which simplifies dependency management and isolates each service in its own container.
+
+---
+
 ## Manual Setup
 
-If you prefer to set up each part individually, follow the manual setup instructions below.
+If you prefer to set up each part individually without Docker, follow the manual setup instructions below.
 
 ### Frontend Setup
 
@@ -212,7 +240,9 @@ This feature simplifies handling of automated inputs, especially for repeated or
 
 To maintain user sessions and prevent unnecessary logins, this project utilizes Redis for session state management. Here's how session handling is managed:
 
-1. **JWT-Based Authentication**: Upon a successful login, a JWT is generated and stored on the client side. This token is sent with every request to verify the user's identity and authorization.
+1. **JWT-Based Authentication**: Upon a successful login, a JWT is generated and stored on the client side. This token is sent with every request to verify the user's identity and
+
+ authorization.
 2. **Redis for Session Storage**: In addition to JWT, session information is securely stored in Redis. Each session is encrypted using **Fernet encryption** for confidentiality and integrity, with a **time-to-live (TTL)** value to manage session expiration automatically.
 3. **Token Validation and Refresh**: The app validates the access token before every request. If the token has expired, a refresh token is used to issue a new access token.
 4. **Session Expiration**: Once a session expires in Redis, the user is required to re-authenticate, providing added security for sensitive data.
@@ -221,12 +251,11 @@ This approach ensures a secure and efficient session state, reducing unnecessary
 
 ## Future Improvements
 
-- **Dockerization**: Future plans include adding a stable Docker setup to containerize the frontend, backend, and Redis for easy deployment.
-- **Unit Testing**: Add unit tests to ensure code reliability and maintainability.
 - **Improved Error Feedback**: Add more descriptive error messages in the UI for a better user experience.
-  
+- **Unit Testing**: Add unit tests to ensure code reliability and maintainability.
+
 ## License
 
 This project is licensed under the MIT License.
 
---- 
+---
