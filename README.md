@@ -240,9 +240,7 @@ This feature simplifies handling of automated inputs, especially for repeated or
 
 To maintain user sessions and prevent unnecessary logins, this project utilizes Redis for session state management. Here's how session handling is managed:
 
-1. **JWT-Based Authentication**: Upon a successful login, a JWT is generated and stored on the client side. This token is sent with every request to verify the user's identity and
-
- authorization.
+1. **JWT-Based Authentication**: Upon a successful login, a JWT is generated and stored on the client side. This token is sent with every request to verify the user's identity and authorization.
 2. **Redis for Session Storage**: In addition to JWT, session information is securely stored in Redis. Each session is encrypted using **Fernet encryption** for confidentiality and integrity, with a **time-to-live (TTL)** value to manage session expiration automatically.
 3. **Token Validation and Refresh**: The app validates the access token before every request. If the token has expired, a refresh token is used to issue a new access token.
 4. **Session Expiration**: Once a session expires in Redis, the user is required to re-authenticate, providing added security for sensitive data.
