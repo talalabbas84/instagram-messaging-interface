@@ -243,9 +243,7 @@ The interface supports JSON-based input, which allows automation and easy handli
       "message": "Your message here"
     }
     ```
-3. **Submit**: The JSON input is parsed and used to automatically fill in the login and message fields. You can preview the
-
- input details before submission to ensure accuracy.
+3. **Submit**: The JSON input is parsed and used to automatically fill in the login and message fields. You can preview the input details before submission to ensure accuracy.
 
 This feature simplifies handling of automated inputs, especially for repeated or batch messaging scenarios.
 
