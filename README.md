@@ -13,8 +13,10 @@ This project is an Instagram Messaging Interface that allows users to securely l
 6. [Tech Stack](#tech-stack)
 7. [Environment Variables](#environment-variables)
 8. [Usage](#usage)
-9. [Future Improvements](#future-improvements)
-10. [License](#license)
+9. [JSON Input Handling](#json-input-handling)
+10. [Session State Management](#session-state-management)
+11. [Future Improvements](#future-improvements)
+12. [License](#license)
 
 ## Prerequisites
 
@@ -155,6 +157,7 @@ instagram-messaging-interface/
 - **Message Sending**: Allows sending messages to specified recipients with input validation and error handling.
 - **Dual Input**: Supports manual entry and JSON-based API input for automation.
 - **Session State**: Tracks session state to manage login persistence until logout.
+- **JWT-Based Authentication**: Uses JSON Web Tokens (JWT) to securely communicate between the frontend and backend.
 
 ## Tech Stack
 
@@ -170,7 +173,8 @@ instagram-messaging-interface/
 - **FastAPI** for the REST API
 - **AgentQL** for backend interaction with Instagram
 - **Redis** for session management
-- **Black** and **Flake8** for code formatting and linting
+- **JWT** for secure communication between frontend and backend
+- **Fernet Encryption** with TTL for secure session storage
 
 ## Environment Variables
 
@@ -186,11 +190,47 @@ Refer to the backend `.env` configuration in the [Manual Setup](#manual-setup) s
 
 For backend API documentation, visit [http://localhost:8000/docs](http://localhost:8000/docs).
 
+## JSON Input Handling
+
+The interface supports JSON-based input, which allows automation and easy handling of multiple requests. This feature enables users to provide all required information (username, password, recipient, and message) as a JSON object. To utilize this feature, follow these steps:
+
+1. **Switch to JSON Input Mode**: In the UI, toggle the input mode to JSON.
+2. **Enter JSON**: Input data in the following JSON format:
+    ```json
+    {
+      "username": "your_username",
+      "password": "your_password",
+      "recipient": "recipient_username",
+      "message": "Your message here"
+    }
+    ```
+3. **Submit**: The JSON input is parsed and used to automatically fill in the login and message fields. You can preview the input details before submission to ensure accuracy.
+
+This feature simplifies handling of automated inputs, especially for repeated or batch messaging scenarios.
+
+## Session State Management
+
+To maintain user sessions and prevent unnecessary logins, this project utilizes Redis for session state management. Here's how session handling is managed:
+
+1. **JWT-Based Authentication**: Upon a successful login, a JWT is generated and stored on the client side. This token is sent with every request to verify the user's identity and authorization.
+2. **Redis for Session Storage**: In addition to JWT, session information is securely stored in Redis. Each session is encrypted using **Fernet encryption** for confidentiality and integrity, with a **time-to-live (TTL)** value to manage session expiration automatically.
+3. **Token Validation and Refresh**: The app validates the access token before every request. If the token has expired, a refresh token is used to issue a new access token.
+4. **Session Expiration**: Once a session expires in Redis, the user is required to re-authenticate, providing added security for sensitive data.
+
+This approach ensures a secure and efficient session state, reducing unnecessary logins and maintaining robust security.
+
 ## Future Improvements
 
 - **Dockerization**: Future plans include adding a stable Docker setup to containerize the frontend, backend, and Redis for easy deployment.
 - **Unit Testing**: Add unit tests to ensure code reliability and maintainability.
-
+- **Improved Error Feedback**: Add more descriptive error messages in the UI for a better user experience.
+  
 ## License
 
 This project is licensed under the MIT License.
+
+--- 
+
+This updated README provides detailed information on JWT token handling
+
+, Redis session encryption with Fernet, and session management through Redis, covering the essentials for secure frontend-backend communication.
