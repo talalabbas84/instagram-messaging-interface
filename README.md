@@ -139,6 +139,9 @@ If you prefer to set up each part individually without Docker, follow the manual
         REDIS_PORT=6379
         REDIS_PASSWORD=your_password  # Leave blank if no password is set
         REDIS_ENABLED=true
+
+        # Browser configuration
+        BROWSER_HEADLESS=true
         ```
 
 5. **Install the AgentQL library**:
