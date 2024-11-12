@@ -48,11 +48,13 @@ export function useSession() {
   // Send a message after ensuring the user is logged in and the token is valid
   const sendMessage = async (message: Message) => {
     try {
+      setIsLoading(true)
       clearError()
       const accessToken = SessionService.getToken()
       if (!accessToken) throw new Error('No access token available')
 
       await InstagramService.sendMessage(message, accessToken)
+      setIsLoading(false)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       // Handle error, retry if it’s due to an expired token
@@ -68,6 +70,7 @@ export function useSession() {
               retryError?.response?.data?.detail ||
                 'Failed to send message after retry',
             )
+            throw retryError
           }
         } else {
           throw err
@@ -76,6 +79,8 @@ export function useSession() {
         setError(err?.response?.data?.detail || 'Failed to send message')
         throw err
       }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -108,6 +113,8 @@ export function useSession() {
       SessionService.clearToken()
       SessionService.clearRefreshToken()
       setIsLoggedIn(false)
+      clearError()
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       SessionService.clearToken()
