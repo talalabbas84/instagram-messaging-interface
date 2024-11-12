@@ -230,7 +230,3 @@ This approach ensures a secure and efficient session state, reducing unnecessary
 This project is licensed under the MIT License.
 
 --- 
-
-This updated README provides detailed information on JWT token handling
-
-, Redis session encryption with Fernet, and session management through Redis, covering the essentials for secure frontend-backend communication.
