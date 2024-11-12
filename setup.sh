@@ -57,6 +57,7 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_PASSWORD=your_password
 REDIS_ENABLED=true
+BROWSER_HEADLESS=true
 EOT
     echo ".env file created in backend with default configuration."
 fi

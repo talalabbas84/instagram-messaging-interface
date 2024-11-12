@@ -81,6 +81,8 @@ class MessageService:
 
     async def send_message(self, recipient: str, message: str, username: str):
         logger.info(f"Starting message send to {recipient} from {username}")
+        
+        context = None  # Initialize context to None to avoid UnboundLocalError
 
         try:
             session_data = await self._get_session_data(username)
@@ -103,7 +105,8 @@ class MessageService:
             logger.exception(f"Error during message sending for {username} to {recipient}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error sending message to {recipient}: {str(e)}")
         finally:
-            await context.close()
+            if context:
+                await context.close()  # Close context only if it was created
             logger.info(f"Context for {username} closed after message attempt")
 
     async def _get_session_data(self, username: str):

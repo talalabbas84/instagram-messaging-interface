@@ -1,17 +1,26 @@
+# Use an official Node.js image as the base
 FROM node:18-alpine
 
+# Set working directory
 WORKDIR /app
 
-COPY package.json .
+# Copy the package.json and package-lock.json files
+COPY package.json package-lock.json ./
 
+# Install dependencies
 RUN npm install
 
-RUN npm i -g serve
-
+# Copy the rest of the application code
 COPY . .
 
+# Build the application
 RUN npm run build
 
+# Install serve for static file serving
+RUN npm install -g serve
+
+# Expose the port for the frontend application
 EXPOSE 3000
 
-CMD [ "serve", "-s", "dist" ]
+# Run the application in production mode
+CMD ["serve", "-s", "dist"]

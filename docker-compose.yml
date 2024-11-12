@@ -20,14 +20,15 @@ services:
       - "8000:8000"
     networks:
       - app-network
-    depends_on:
-      - redis
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      RUNNING_IN_DOCKER: "true"
+    depends_on:
+      - redis
 
   redis:
-    image: "redis:alpine"
+    image: redis:alpine
     volumes:
       - redis-data:/data
     ports:

@@ -16,9 +16,15 @@ class BrowserHelper:
         """Initializes Playwright and launches a Chromium browser instance if not already started."""
         if not BrowserHelper._playwright:
             BrowserHelper._playwright = await async_playwright().start()
+
+        headless_mode = (
+            True if os.getenv("RUNNING_IN_DOCKER") == "true"
+            else os.getenv("BROWSER_HEADLESS", "true").lower() == "true"
+        )
+
         if not BrowserHelper._browser:
             BrowserHelper._browser = await BrowserHelper._playwright.chromium.launch(
-                headless=False,
+                headless= headless_mode,
                 args=Config.BROWSER_ARGS,
                 ignore_default_args=Config.BROWSER_IGNORED_ARGS,
             )

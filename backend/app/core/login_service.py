@@ -47,6 +47,7 @@ class LoginService:
 
     async def login(self, username: str, password: str):
         """Logs in a user, saves session data, and generates tokens if successful."""
+        context = None  # Initialize context to None at the beginning
         try:
             logger.info(f"Starting login for user {username}")
             self.session_service.delete_session(username)  # Clear any existing session
@@ -102,8 +103,10 @@ class LoginService:
             logger.exception(f"Unexpected error during login for {username}: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Unexpected error during login for {username}: {str(e)}")
         finally:
-            await context.close()
+            if context:
+                await context.close()  # Close the context only if it was created successfully
             logger.info(f"Browser context for {username} closed after login attempt")
+
 
     async def refresh_access_token(self, refresh_token: str):
         """Generates a new access token using a valid refresh token."""
