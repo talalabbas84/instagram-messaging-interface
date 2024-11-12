@@ -2,6 +2,14 @@
 
 This project is an Instagram Messaging Interface that allows users to securely log in, send messages via Instagram, and handle both manual and JSON-based API inputs. The backend is built with FastAPI, using Redis for session management, while the frontend leverages React with Vite, TailwindCSS, and ShadCN UI.
 
+## Screenshots
+
+### Login Screen
+![Login Screen](https://raw.githubusercontent.com/talalabbas84/instagram-messaging-interface/refs/heads/main/assets/image1.png)
+
+### Messaging Screen
+![Messaging Screen](https://raw.githubusercontent.com/talalabbas84/instagram-messaging-interface/refs/heads/main/assets/image2.png)
+
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Quick Setup](#quick-setup)
@@ -235,7 +243,9 @@ The interface supports JSON-based input, which allows automation and easy handli
       "message": "Your message here"
     }
     ```
-3. **Submit**: The JSON input is parsed and used to automatically fill in the login and message fields. You can preview the input details before submission to ensure accuracy.
+3. **Submit**: The JSON input is parsed and used to automatically fill in the login and message fields. You can preview the
+
+ input details before submission to ensure accuracy.
 
 This feature simplifies handling of automated inputs, especially for repeated or batch messaging scenarios.
 
