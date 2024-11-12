@@ -60,7 +60,7 @@ class JWTService:
             logger.error("Invalid token")
             raise InvalidTokenError("Invalid token")
 
-    async def validae_access_token_and_generate_new_access_token(self, access_token: str):
+    async def validate_access_token_and_generate_new_access_token(self, access_token: str):
         """
         Validates the given access token and generates a new access token if valid.
         """

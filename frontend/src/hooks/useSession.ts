@@ -1,107 +1,98 @@
+import InstagramService from '@/services/InstagramService'
+import SessionService from '@/services/SessionService'
+import TokenService from '@/services/TokenService'
 import { useEffect, useState } from 'react'
-import api from '../services/api'
-import SessionService from '../services/sessionService'
+import { Message, User } from '../types'
+import { useError } from './useError'
 
 export function useSession() {
+  const { showError: setError, clearError, error } = useError() // Use showError and clearError
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Initial authorization to check if there is a valid access token
     const authorize = async () => {
+      console.log('Checking token authorization')
       const accessToken = SessionService.getToken()
-      const refreshToken = SessionService.getRefreshToken()
-
+      console.log('Access token:', accessToken)
       if (accessToken) {
-        try {
-          await api.get('/authorized-token', {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          })
-          setIsLoggedIn(true)
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            console.error(
-              'Error while authorizing with access token:',
-              err.message,
-            )
-            setError('Authorization failed: ' + err.message)
-          }
-
-          // Attempt to refresh the token if authorization with access token fails
-          if (refreshToken) {
-            try {
-              const response = await api.post('/refresh-token', {
-                refresh_token: refreshToken,
-              })
-              const { access_token, refresh_token: newRefreshToken } =
-                response.data.data
-
-              // Update session with new tokens
-              SessionService.setToken(access_token)
-              SessionService.setRefreshToken(newRefreshToken)
-              setIsLoggedIn(true)
-            } catch (err: unknown) {
-              if (err instanceof Error) {
-                console.error('Error while refreshing token:', err.message)
-                setError('Failed to refresh token: ' + err.message)
-              }
-            }
-          } else {
-            setError('No access token or refresh token available')
-          }
-        }
-      } else {
-        // setError('No access token found')
+        await handleTokenAuthorization(accessToken)
       }
     }
-
     authorize()
   }, [])
 
-  const login = async (
-    user: { username: string; password: string },
-    isMessage: boolean,
-    handleSendMessage: () => void,
-  ) => {
+  const handleTokenAuthorization = async (accessToken: string) => {
     try {
-      setIsLoading(true)
-      setError(null)
+      await InstagramService.checkTokenAuthorization(accessToken)
+      setIsLoggedIn(true)
+    } catch {
+      await attemptTokenRefresh()
+    }
+  }
 
-      const response = await api.post('/login', user)
-      const { access_token, refresh_token } = response.data.data
+  const attemptTokenRefresh = async () => {
+    try {
+      await TokenService.refreshAccessToken()
+      setIsLoggedIn(true)
+    } catch {
+      setError('Failed to refresh token')
+      SessionService.clearToken()
+      SessionService.clearRefreshToken()
+    }
+  }
 
-      // Save tokens to session storage
+  const sendMessage = async (message: Message) => {
+    try {
+      clearError()
+
+      const accessToken = SessionService.getToken()
+      if (!accessToken) throw new Error('No access token available')
+
+      await InstagramService.sendMessage(message, accessToken)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      // Handle error, check if it’s due to expired token
+      if (err?.response?.status === 401) {
+        await attemptTokenRefresh()
+        const newAccessToken = SessionService.getToken()
+        if (newAccessToken) {
+          // Retry sending the message after refreshing the token
+          try {
+            await InstagramService.sendMessage(message, newAccessToken)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } catch (retryError: any) {
+            setError(
+              retryError?.response?.data?.detail ||
+                'Failed to send message after retry',
+            )
+          }
+          throw err
+        }
+      } else {
+        console.log(err, 'erdsadsadadsror')
+        setError(err?.response?.data?.detail || 'Failed to send message')
+        throw err
+      }
+    }
+  }
+
+  const login = async (user: User, onSuccess: () => void) => {
+    setIsLoading(true)
+    clearError()
+
+    try {
+      const response = await InstagramService.login(user)
+      const { access_token, refresh_token } = response.data
       SessionService.setToken(access_token)
       SessionService.setRefreshToken(refresh_token)
       setIsLoggedIn(true)
-
-      // If login is related to messaging, trigger the message handler
-      if (isMessage) {
-        handleSendMessage()
-      }
-    } catch (err: unknown) {
-      // Handle errors from login request, especially if from server response
-      if (err instanceof Error) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        if (err?.response?.data?.detail) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          setError(`Login failed: ${err.response.data.detail}`)
-        } else {
-          setError(`Login failed: ${err.message}`)
-        }
-      } else if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data: { detail: string } } }
-        if (axiosError.response?.data?.detail) {
-          setError(`Login failed: ${axiosError.response.data.detail}`)
-        } else {
-          setError('Login failed due to an unknown reason')
-        }
-      } else {
-        setError('An unknown error occurred during login')
-      }
+      console.log('Logged in')
+      onSuccess()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err?.response?.data?.detail || 'Login failed')
+      throw err
     } finally {
       setIsLoading(false)
     }
@@ -109,45 +100,16 @@ export function useSession() {
 
   const logout = async () => {
     try {
-      await api.post('/logout')
+      await InstagramService.logout()
       SessionService.clearToken()
       SessionService.clearRefreshToken()
       setIsLoggedIn(false)
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        console.error('Logout failed:', err.message)
-        setError(`Logout failed: ${err.message}`)
-      } else {
-        setError('An unknown error occurred during logout')
-      }
-    }
-  }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      SessionService.clearToken()
+      SessionService.clearRefreshToken()
 
-  const refreshToken = async () => {
-    const refreshToken = SessionService.getRefreshToken()
-
-    if (refreshToken) {
-      try {
-        const response = await api.post('/refresh-token', {
-          refresh_token: refreshToken,
-        })
-        const { access_token, refresh_token: newRefreshToken } =
-          response.data.data
-
-        // Update tokens in session storage
-        SessionService.setToken(access_token)
-        SessionService.setRefreshToken(newRefreshToken)
-
-        return access_token
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(`Failed to refresh token: ${err.message}`)
-        } else {
-          setError('Failed to refresh token due to an unexpected error.')
-        }
-      }
-    } else {
-      setError('No refresh token available.')
+      setError(`Logout failed: ${err.message || 'Unknown error'}`)
     }
   }
 
@@ -155,7 +117,7 @@ export function useSession() {
     isLoggedIn,
     login,
     logout,
-    refreshToken,
+    sendMessage, // Expose sendMessage function
     isLoading,
     error,
     setError,

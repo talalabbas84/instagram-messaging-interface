@@ -1,11 +1,6 @@
-// services/storageService.ts
-
-/**
- * A utility service for managing localStorage interactions.
- */
 class StorageService {
   /**
-   * Retrieves an item from localStorage.
+   * Retrieves an item from localStorage as a string.
    * @param key - The key of the item to retrieve.
    * @returns The value associated with the key, or null if not found.
    */
@@ -14,7 +9,7 @@ class StorageService {
   }
 
   /**
-   * Sets an item in localStorage.
+   * Sets an item in localStorage as a string.
    * @param key - The key to associate with the stored value.
    * @param value - The value to store.
    */

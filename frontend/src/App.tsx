@@ -1,8 +1,13 @@
 import './App.css'
-import InstagramMessaging from './components/InstagramMessaging'
+import InstagramMessaging from './components/InstagramMessaging/InstagramMessaging'
+import { SessionProvider } from './context/SessionContext'
 
 function App() {
-  return <InstagramMessaging />
+  return (
+    <SessionProvider>
+      <InstagramMessaging />
+    </SessionProvider>
+  )
 }
 
 export default App
