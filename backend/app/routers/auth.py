@@ -4,16 +4,10 @@ from app.models.auth_models import LoginRequest
 from app.dependencies import get_login_service, get_jwt_service
 from app.core.jwt_service import JWTService
 from pydantic import BaseModel
+from app.models.token_models import RefreshTokenRequest, TokenRequest
+
 import jwt
 from jwt.exceptions import InvalidTokenError
-
-# Request models for token operations
-class RefreshTokenRequest(BaseModel):
-    refresh_token: str
-
-class TokenRequest(BaseModel):
-    access_token: str
-    refresh_token: str
 
 router = APIRouter()
 

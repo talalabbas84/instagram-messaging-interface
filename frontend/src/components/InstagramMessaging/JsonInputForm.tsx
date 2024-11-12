@@ -4,6 +4,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
+// Interface defining the structure of the JSON data
 export interface JsonData {
   username: string
   password: string
@@ -11,6 +12,7 @@ export interface JsonData {
   message: string
 }
 
+// Interface for the props passed to the component
 interface JsonInputFormProps {
   jsonInput: string
   setJsonInput: (input: string) => void
@@ -19,7 +21,6 @@ interface JsonInputFormProps {
   setUser: (user: { username: string; password: string }) => void
   setMessage: (message: { recipient: string; message: string }) => void
   handleSubmit: () => Promise<void>
-  handleSendMessage: () => Promise<void>
   setError: (error: string) => void
 }
 
@@ -35,18 +36,20 @@ export function JsonInputForm({
 }: JsonInputFormProps) {
   const [showPassword, setShowPassword] = useState(false)
 
-  // Handle JSON input changes and validate JSON format
+  // Handle changes in the JSON input field and validate the JSON structure
   const handleJsonChange = (input: string) => {
     setJsonInput(input)
-    setError('')
+    setError('') // Clear any previous error messages
     try {
-      const parsedJson: JsonData = JSON.parse(input)
+      const parsedJson: JsonData = JSON.parse(input) // Attempt to parse JSON
+      // Ensure all required fields are present
       if (
         parsedJson.username &&
         parsedJson.password &&
         parsedJson.recipient &&
         parsedJson.message
       ) {
+        // If valid, update the state with parsed JSON data
         setJsonData(parsedJson)
         setUser({
           username: parsedJson.username,
@@ -57,16 +60,18 @@ export function JsonInputForm({
           message: parsedJson.message,
         })
       } else {
+        // Display error if required fields are missing
         setError('Invalid JSON format: Missing required fields')
         setJsonData(null)
       }
     } catch {
+      // Handle invalid JSON format
       setError('Invalid JSON format')
       setJsonData(null)
     }
   }
 
-  // Sequential login and send message actions
+  // Handle submission of the form, which performs login and sends message
   const onSubmit = async () => {
     if (!jsonData) {
       setError('Please provide a valid JSON with all required fields')
@@ -74,9 +79,8 @@ export function JsonInputForm({
     }
     try {
       await handleSubmit() // Login
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      // setError('Login or message sending failed')
+    } catch {
+      console.log('Error occurred during login')
     }
   }
 
@@ -93,6 +97,7 @@ export function JsonInputForm({
         className="w-full min-h-[200px]"
       />
 
+      {/* Display parsed JSON data as a preview */}
       {jsonData && (
         <div className="mt-4 p-4 border rounded bg-gray-100 space-y-2">
           <h3 className="text-lg font-medium">Preview</h3>
@@ -147,6 +152,7 @@ export function JsonInputForm({
         </div>
       )}
 
+      {/* Submit button to trigger login and message sending */}
       <Button
         variant="outline"
         className="w-full mt-4"

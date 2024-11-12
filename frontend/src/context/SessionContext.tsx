@@ -2,6 +2,7 @@ import { createContext, ReactNode, useContext, useState } from 'react'
 import { useSession } from '../hooks/useSession'
 import { Message, User } from '../types'
 
+// Define the types for the session context
 interface SessionContextType {
   isLoggedIn: boolean
   user: User
@@ -16,17 +17,23 @@ interface SessionContextType {
   setMessage: (message: Message) => void
 }
 
+// Create a context with the defined type or undefined by default
 const SessionContext = createContext<SessionContextType | undefined>(undefined)
 
+// Provider component to wrap parts of the app that need session data
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
+  // Use the custom hook `useSession` to handle session actions and state
   const { isLoggedIn, login, logout, isLoading, sendMessage, error, setError } =
     useSession()
+
+  // Local states for user and message
   const [user, setUser] = useState<User>({ username: '', password: '' })
   const [message, setMessage] = useState<Message>({
     recipient: '',
     message: '',
   })
 
+  // Pass all session-related data and actions to context
   return (
     <SessionContext.Provider
       value={{
@@ -48,9 +55,11 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
   )
 }
 
+// Custom hook to use the session context
 export const useSessionContext = () => {
   const context = useContext(SessionContext)
-  if (!context)
+  if (!context) {
     throw new Error('useSessionContext must be used within a SessionProvider')
+  }
   return context
 }

@@ -13,6 +13,7 @@ import { LoginHandler } from './LoginHandler'
 import { MessageSender } from './MessageSender'
 
 export default function InstagramMessaging() {
+  // Destructure context values and functions from SessionContext
   const {
     isLoggedIn,
     user,
@@ -31,9 +32,9 @@ export default function InstagramMessaging() {
   const [jsonInput, setJsonInput] = useState('')
   const [jsonData, setJsonData] = useState<JsonData | null>(null)
   const [activeTab, setActiveTab] = useState<'manual' | 'json'>('manual')
-  console.log(error)
 
-  // JSON login and message submission in sequence
+
+  // Handle login and message send for JSON input in sequence
   const handleSubmitFromJson = async () => {
     if (
       !user.username ||
@@ -45,6 +46,7 @@ export default function InstagramMessaging() {
       return
     }
     try {
+      // Login first, then send the message if login is successful
       await login(user, async () => {
         await handleSendMessage()
       })
@@ -54,7 +56,7 @@ export default function InstagramMessaging() {
     }
   }
 
-  // Manual login submission only
+  // Handle manual login submission without sending a message
   const handleManualLogin = async () => {
     if (!user.username || !user.password) {
       setError('Please fill in all fields')
@@ -66,7 +68,7 @@ export default function InstagramMessaging() {
     })
   }
 
-  // Send Message Handler
+  // Send the message after confirming recipient and message fields are filled
   const handleSendMessage = async () => {
     if (!message.recipient || !message.message) {
       setError('Please fill in all fields')
@@ -76,7 +78,7 @@ export default function InstagramMessaging() {
     try {
       await sendMessage(message)
       setSuccess(`Message sent to ${message.recipient}!`)
-      setMessage({ recipient: '', message: '' }) // Clear message after sending
+      setMessage({ recipient: '', message: '' }) // Clear message fields after sending
     } catch (error) {
       console.log(error)
     }
@@ -94,8 +96,10 @@ export default function InstagramMessaging() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Display success or error messages */}
           {success && <p className="text-green-600 text-center">{success}</p>}
           {error && <p className="text-red-500 text-center">{error}</p>}
+          {/* Tab controls to switch between Manual and JSON input modes */}
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as 'manual' | 'json')}
@@ -104,6 +108,7 @@ export default function InstagramMessaging() {
               <TabsTrigger value="manual">Manual Input</TabsTrigger>
               <TabsTrigger value="json">JSON Input</TabsTrigger>
             </TabsList>
+            {/* Manual Input Tab Content */}
             <TabsContent value="manual">
               {isLoggedIn ? (
                 <MessageSender
@@ -116,12 +121,13 @@ export default function InstagramMessaging() {
                 <LoginHandler
                   user={user}
                   setUser={setUser}
-                  onLogin={handleManualLogin} // Only login for manual
+                  onLogin={handleManualLogin} // Only login for manual input
                   isLoading={isLoading}
                   error={error}
                 />
               )}
             </TabsContent>
+            {/* JSON Input Tab Content */}
             <TabsContent value="json">
               <JsonInputForm
                 jsonInput={jsonInput}
@@ -129,7 +135,6 @@ export default function InstagramMessaging() {
                 jsonData={jsonData}
                 setJsonData={setJsonData}
                 handleSubmit={handleSubmitFromJson} // Sequential login and send message for JSON
-                handleSendMessage={handleSendMessage}
                 setUser={setUser}
                 setMessage={setMessage}
                 setError={setError}
@@ -137,6 +142,7 @@ export default function InstagramMessaging() {
             </TabsContent>
           </Tabs>
         </CardContent>
+        {/* Logout button displayed if user is logged in */}
         {isLoggedIn && (
           <button
             onClick={logout}
