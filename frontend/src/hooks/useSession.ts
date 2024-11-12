@@ -53,7 +53,7 @@ export function useSession() {
       if (!accessToken) throw new Error('No access token available')
 
       await InstagramService.sendMessage(message, accessToken)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       // Handle error, retry if it’s due to an expired token
       if (err?.response?.status === 401) {
@@ -62,7 +62,7 @@ export function useSession() {
         if (newAccessToken) {
           try {
             await InstagramService.sendMessage(message, newAccessToken)
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
           } catch (retryError: any) {
             setError(
               retryError?.response?.data?.detail ||
@@ -92,7 +92,7 @@ export function useSession() {
       setIsLoggedIn(true)
       console.log('Logged in')
       onSuccess()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err?.response?.data?.detail || 'Login failed')
       throw err
@@ -108,7 +108,7 @@ export function useSession() {
       SessionService.clearToken()
       SessionService.clearRefreshToken()
       setIsLoggedIn(false)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       SessionService.clearToken()
       SessionService.clearRefreshToken()

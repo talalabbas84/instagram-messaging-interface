@@ -33,7 +33,6 @@ export default function InstagramMessaging() {
   const [jsonData, setJsonData] = useState<JsonData | null>(null)
   const [activeTab, setActiveTab] = useState<'manual' | 'json'>('manual')
 
-
   // Handle login and message send for JSON input in sequence
   const handleSubmitFromJson = async () => {
     if (
