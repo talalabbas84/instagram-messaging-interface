@@ -5,10 +5,10 @@ This project is an Instagram Messaging Interface that allows users to securely l
 ## Screenshots
 
 ### Login Screen
-![Login Screen](https://raw.githubusercontent.com/talalabbas84/instagram-messaging-interface/refs/heads/main/assets/image1.png)
+![Login Screen](https://raw.githubusercontent.com/talalabbas84/instagram-messaging-interface/refs/heads/main/assets/image2.png)
 
 ### Messaging Screen
-![Messaging Screen](https://raw.githubusercontent.com/talalabbas84/instagram-messaging-interface/refs/heads/main/assets/image2.png)
+![Messaging Screen](https://raw.githubusercontent.com/talalabbas84/instagram-messaging-interface/refs/heads/main/assets/image1.png)
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
